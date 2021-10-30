@@ -6,6 +6,7 @@ import config, { IConfig } from './config'
 jest.mock('./config')
 
 const token = 'test-token'
+const authResponseBody = { access_token: token }
 
 jest.mock('axios')
 
@@ -58,7 +59,6 @@ describe('app', () => {
     describe('when the user is valid', () => {
       const testUser = 'testUser'
       const testPassword = 'testPassword'
-      const authResponseBody = { access_token: token }
 
       beforeEach(() => {
         //@ts-ignore
@@ -93,8 +93,59 @@ describe('app', () => {
           })
         )
 
-        expect(response.body).toEqual(authResponseBody)
         expect(response.status).toBe(200)
+        expect(response.body).toEqual(authResponseBody)
+      })
+    })
+  })
+
+  describe('when refreshing access token', () => {
+    const refreshToken = 'test-refresh-token'
+
+    const params = qs.stringify({
+      client_id: config.oauthClientId,
+      grant_type: 'refresh_token',
+      client_secret: config.oauthClientSecret,
+      refresh_token: refreshToken,
+    })
+
+    const refresh = async () =>
+      await request(app.callback()).post('/api/jwt/refresh').send({ token: refreshToken })
+
+    describe('when using an invalid refresh token', () => {
+      beforeEach(() => {
+        //@ts-ignore
+        axios.mockImplementation(() =>
+          Promise.reject({
+            response: {
+              status: 400,
+            },
+          })
+        )
+      })
+
+      it('throws a 400 error', async () => {
+        const response = await refresh()
+
+        expect(response.status).toBe(400)
+      })
+    })
+
+    describe('when using a valid refresh token', () => {
+      beforeEach(() => {
+        //@ts-ignore
+        axios.mockImplementation(() =>
+          Promise.resolve({
+            data: authResponseBody,
+          })
+        )
+      })
+
+      it('generates a valid access token', async () => {
+        const response = await refresh()
+
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual(authResponseBody)
       })
     })
   })

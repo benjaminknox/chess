@@ -49,6 +49,27 @@ router.post('/api/jwt/login', async (ctx: Context) => {
     })
 })
 
+router.post('/api/jwt/refresh', async (ctx: Context) => {
+  await axios({
+    url: config.oauthClientUrl,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    data: qs.stringify({
+      client_id: config.oauthClientId,
+      grant_type: 'refresh_token',
+      client_secret: config.oauthClientSecret,
+      refresh_token: ctx.request.body.token,
+    }),
+  })
+    .then((response: any) => {
+      ctx.body = response.data
+      ctx.status = 200
+    })
+    .catch((error: any) => {
+      ctx.status = error.response.status
+    })
+})
+
 app.use(router.routes())
 
 export default app
