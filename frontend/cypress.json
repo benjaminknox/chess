@@ -1,0 +1,10 @@
+{
+  "component": {
+    "componentFolder": "src",
+    "testFiles": "**/*spec.{js,jsx,ts,tsx}"
+  },
+  "reporter": "junit",
+  "reporterOptions": {
+    "mochaFile": "cypress/results/test-[hash].xml"
+  }
+}

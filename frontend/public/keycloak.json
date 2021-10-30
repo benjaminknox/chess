@@ -1,0 +1,10 @@
+{
+  "realm": "knox-pro",
+  "auth-server-url": "https://auth.knox.pro/auth/",
+  "ssl-required": "external",
+  "resource": "chess",
+  "public-client": true,
+  "verify-token-audience": true,
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}
