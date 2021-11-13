@@ -1,5 +1,6 @@
 import qs from 'qs'
 import axios from 'axios'
+import cors from '@koa/cors'
 import config from './config'
 import bodyParser from 'koa-bodyparser'
 import { default as Router } from 'koa-router'
@@ -8,10 +9,12 @@ import { default as Koa, Context, Next } from 'koa'
 const app: Koa = new Koa()
 
 app.use(bodyParser())
+app.use(cors({ origin: '*' }))
 
 app.use(async (ctx: Context, next: Next) => {
   // Log the request to the console
   console.log('Url:', ctx.url)
+
   // Pass the request to the next middleware function
   await next()
 })

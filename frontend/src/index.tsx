@@ -3,12 +3,15 @@ import { App } from './App'
 import ReactDOM from 'react-dom'
 import reportWebVitals from './reportWebVitals'
 import { BrowserRouter } from 'react-router-dom'
+import { ConfigsProvider } from '@common/configs'
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <ConfigsProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ConfigsProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )

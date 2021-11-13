@@ -1,16 +1,16 @@
-import { App } from './App'
 import * as React from 'react'
 import { mount } from '@cypress/react'
+import { ProtectedRoute } from './ProtectedRoute'
 import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
 
-describe('App', () => {
-  describe('when not logged in', () => {
+describe('ProtectedRoute', () => {
+  describe('when user is not logged in', () => {
     it('redirects to login page', () => {
       let testLocation: Location | any = {}
 
       mount(
-        <MemoryRouter initialEntries={['/login']} initialIndex={1}>
-          <App />
+        <MemoryRouter initialEntries={['/']} initialIndex={1}>
+          <ProtectedRoute component={() => <>Unprotected Route</>} />
           <Route
             path='*'
             render={({ location }: RouteProps) => {

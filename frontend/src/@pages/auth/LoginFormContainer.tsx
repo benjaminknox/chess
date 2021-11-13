@@ -17,11 +17,16 @@ export function LoginFormContainer() {
         body: b({
           auth: btoa(`${username}:${password}`),
         }),
+        headers: {
+          'Content-type': 'application/json'
+        }
       }).finally(() => {
         setLoading(false)
       }).catch(() => {
         setSubmitFailed("Couldn't sign in, try again.")
       })
+    } else {
+      console.warn("Config values not present")
     }
   }
 

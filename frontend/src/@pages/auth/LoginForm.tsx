@@ -9,6 +9,7 @@ const useStyles = makeStyles({
     textAlign: 'center',
     padding: '10px',
     maxWidth: '300px',
+    maxHeight: '325px'
   },
   space: {
     marginBottom: '40px',
