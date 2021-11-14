@@ -37,7 +37,7 @@ describe('LoginFormContainer', () => {
         })
     })
 
-    it.only('shows loading button when submiting', () => {
+    it('shows loading button when submiting', () => {
       const fetchMock = mountWithFetchMocking(<TestLoginFormContainer />, {
         path: loginPath,
         method: 'POST',

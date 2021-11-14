@@ -26,5 +26,6 @@ describe('ProtectedRoute', () => {
         expect(testLocation.pathname).to.equal('/login')
       })
     })
+
   })
 })
