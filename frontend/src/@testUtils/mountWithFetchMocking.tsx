@@ -11,6 +11,7 @@ export interface FetchMock {
   status?: number
   inputData?: any
   responseData?: any
+  headers?: any
 }
 
 interface MockLookup {
@@ -34,7 +35,7 @@ function mockLookupArgBuilder(mocks: Array<FetchMock>) {
     }
 
     if (mock.inputData) {
-      args = { ...args, body: JSON.stringify(mock.inputData )}
+      args = { ...args, body: JSON.stringify(mock.inputData) }
     }
 
     const key = JSON.stringify(args)
@@ -60,7 +61,7 @@ function setupFetchMocks(mocks: FetchMock[]): Cypress.Agent<SinonStub> {
   const mockedArgs = mockLookupArgBuilder(mocks)
 
   stub.callsFake(async (path: string, params: any) => {
-    const args = { path, ...params }
+    const { headers, ...args } : any  = { path, ...params }
     const matchingMock = mockedArgs[JSON.stringify(args)]
     if (matchingMock) {
       const { delay, status, error, responseData } = matchingMock

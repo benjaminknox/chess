@@ -9,7 +9,7 @@ describe('LoginFormContainer', () => {
   const basePath = 'http://test'
   const testPassword = 'testPassword'
   const loginPath = `${basePath}/api/jwt/login`
-  const auth : string = btoa(`${testUser}:${testPassword}`)
+  const auth: string = btoa(`${testUser}:${testPassword}`)
 
   const typeUserName = () => {
     cy.get('[data-cy="login-form-email"]').type(testUser)
@@ -22,6 +22,9 @@ describe('LoginFormContainer', () => {
         path: loginPath,
         method: 'POST',
         inputData: { auth },
+        headers: {
+          'Content-type': 'application/json',
+        },
       })
 
       typeUserName()
@@ -34,12 +37,15 @@ describe('LoginFormContainer', () => {
         })
     })
 
-    it('shows loading button when submiting', () => {
+    it.only('shows loading button when submiting', () => {
       const fetchMock = mountWithFetchMocking(<TestLoginFormContainer />, {
         path: loginPath,
         method: 'POST',
         inputData: { auth },
         delay: 3000,
+        headers: {
+          'Content-type': 'application/json',
+        },
       })
 
       typeUserName()
@@ -54,11 +60,14 @@ describe('LoginFormContainer', () => {
         path: loginPath,
         method: 'POST',
         inputData: { auth },
-        error: true
+        error: true,
+        headers: {
+          'Content-type': 'application/json'
+        }
       })
 
       cy.get('[data-cy="login-form-submit"]').click()
-      cy.get('[data-cy="login-form-error"]').should("exist")
+      cy.get('[data-cy="login-form-error"]').should('exist')
     })
   })
 
