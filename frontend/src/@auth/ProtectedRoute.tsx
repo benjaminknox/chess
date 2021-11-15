@@ -9,6 +9,7 @@ export function ProtectedRoute({ component: Component, ...restOfProps }: any) {
     Auth.session.sessionExpiration < Date.now() &&
     Auth.session.refreshTokenExpiration < Date.now()
   ) {
+    dispatch('auth/resetIdentity')
     return <Redirect to='/login' />
   }
 

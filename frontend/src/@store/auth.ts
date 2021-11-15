@@ -25,6 +25,7 @@ export interface AuthState {
 
 export interface AuthEvents {
   ['auth/setIdentity']: IdentityProps
+  ['auth/resetIdentity']: void
 }
 
 export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
@@ -51,4 +52,13 @@ export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
       },
     }
   })
+
+  store.on('auth/resetIdentity', state => ({
+    ...state,
+    Auth: {
+      identity: undefined,
+      isAuthenticated: false,
+      session: {},
+    },
+  }))
 }

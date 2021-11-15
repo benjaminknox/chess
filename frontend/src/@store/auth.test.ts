@@ -3,24 +3,31 @@ import { createStoreon } from 'storeon'
 import { StoreState, StoreEvents } from '.'
 
 describe('Auth Store', () => {
+  let store: any
+
+  const dispatchToken = () => {
+    store.dispatch('auth/setIdentity', {
+      scope: 'test-scope',
+      id_token: 'test-id-token',
+      expires_in: 5000,
+      token_type: 'Bearer',
+      access_token: 'test-access-token',
+      refresh_token: 'test-refresh-token',
+      session_state: 'test-sessions-state-id',
+      refresh_expires_in: 6000,
+      ['not-before-policy']: 0,
+    })
+  }
+
+  beforeEach(() => {
+    store = createStoreon<StoreState, StoreEvents>([Auth])
+  })
+
   describe('when updating access token', () => {
     let dateNowSpy: any
-    let store: any
-
     beforeEach(() => {
       dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => 0)
-      store = createStoreon<StoreState, StoreEvents>([Auth])
-      store.dispatch('auth/setIdentity', {
-        scope: 'test-scope',
-        id_token: 'test-id-token',
-        expires_in: 5000,
-        token_type: 'Bearer',
-        access_token: 'test-access-token',
-        refresh_token: 'test-refresh-token',
-        session_state: 'test-sessions-state-id',
-        refresh_expires_in: 6000,
-        ['not-before-policy']: 0,
-      })
+      dispatchToken()
     })
 
     afterEach(() => {
@@ -40,6 +47,16 @@ describe('Auth Store', () => {
     it('sets refresh token expiration date', () => {
       //@ts-ignore
       expect(store.get().Auth.session.refreshTokenExpiration).toBe(6000000)
+    })
+  })
+  describe('when resetting session', () => {
+    it('resets session', () => {
+      dispatchToken()
+      store.dispatch('auth/resetIdentity')
+      //@ts-ignore
+      expect(store.get().Auth.session).toStrictEqual({})
+      //@ts-ignore
+      expect(store.get().Auth.isAuthenticated).toBe(false)
     })
   })
 })
