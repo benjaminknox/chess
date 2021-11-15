@@ -9,7 +9,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
 
 describe('LoginFormContainer', () => {
-  let store : any;
+  let store: any
   const testUser = 'testUser'
   const basePath = 'http://test'
   const testPassword = 'testPassword'

@@ -11,7 +11,9 @@ describe('ProtectedRoute', () => {
 
   const TestComponent = () => (
     <MemoryRouter initialEntries={['/']} initialIndex={1}>
-      <ProtectedRoute component={() => <div data-cy='protected-test-route'>Protected Route</div>} />
+      <ProtectedRoute
+        component={() => <div data-cy='protected-test-route'>Protected Route</div>}
+      />
       <Route
         path='*'
         render={({ location }: RouteProps) => {
@@ -28,7 +30,6 @@ describe('ProtectedRoute', () => {
 
   describe('when user is not logged in', () => {
     it('redirects to login page', () => {
-
       mount(
         <StoreContext.Provider value={createStoreon([Auth])}>
           <TestComponent />
@@ -46,15 +47,15 @@ describe('ProtectedRoute', () => {
       const store = createStoreon([Auth])
 
       store.dispatch('auth/setIdentity', {
-        scope: "test-scope",
-        id_token: "test-id-token",
+        scope: 'test-scope',
+        id_token: 'test-id-token',
         expires_in: 5000,
-        token_type: "Bearer",
-        access_token: "test-access-token",
-        refresh_token: "test-refresh-token",
-        session_state: "test-sessions-state-id",
+        token_type: 'Bearer',
+        access_token: 'test-access-token',
+        refresh_token: 'test-refresh-token',
+        session_state: 'test-sessions-state-id',
         refresh_expires_in: 5000,
-        ['not-before-policy']: 0
+        ['not-before-policy']: 0,
       })
 
       mount(
@@ -66,6 +67,40 @@ describe('ProtectedRoute', () => {
       cy.get('[data-cy=protected-test-route]').then(() => {
         // @ts-ignore
         expect(testLocation.pathname).to.equal('/')
+      })
+    })
+  })
+
+  describe('when user session expires', () => {
+    describe('when refresh token is expired', () => {
+      it('should be logged out', () => {
+        const dateNowStub = cy.stub(Date, 'now').callsFake(() => 0)
+        const store = createStoreon([Auth])
+
+        store.dispatch('auth/setIdentity', {
+          scope: 'test-scope',
+          id_token: 'test-id-token',
+          expires_in: 5000,
+          token_type: 'Bearer',
+          access_token: 'test-access-token',
+          refresh_token: 'test-refresh-token',
+          session_state: 'test-sessions-state-id',
+          refresh_expires_in: 5000,
+          ['not-before-policy']: 0,
+        })
+
+        dateNowStub.restore()
+
+        mount(
+          <StoreContext.Provider value={store}>
+            <TestComponent />
+          </StoreContext.Provider>
+        )
+
+        cy.get('[data-cy=test]').then(() => {
+          // @ts-ignore
+          expect(testLocation.pathname).to.equal('/login')
+        })
       })
     })
   })

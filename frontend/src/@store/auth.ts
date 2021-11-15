@@ -16,6 +16,10 @@ export interface AuthState {
   Auth: {
     identity?: IdentityProps
     isAuthenticated: boolean
+    session: {
+      sessionExpiration?: number
+      refreshTokenExpiration?: number
+    }
   }
 }
 
@@ -29,16 +33,22 @@ export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
       ...state,
       Auth: {
         isAuthenticated: false,
+        session: {},
       },
     }
   })
+
   store.on('auth/setIdentity', (state, identity: IdentityProps) => {
     return {
       ...state,
       Auth: {
         identity,
         isAuthenticated: true,
-      }
+        session: {
+          sessionExpiration: Date.now() + identity.expires_in * 1000,
+          refreshTokenExpiration: Date.now() + identity.refresh_expires_in * 1000,
+        },
+      },
     }
   })
 }

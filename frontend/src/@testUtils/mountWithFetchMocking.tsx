@@ -61,7 +61,7 @@ function setupFetchMocks(mocks: FetchMock[]): Cypress.Agent<SinonStub> {
   const mockedArgs = mockLookupArgBuilder(mocks)
 
   stub.callsFake(async (path: string, params: any) => {
-    const { headers, ...args } : any  = { path, ...params }
+    const { headers, ...args }: any = { path, ...params }
     const matchingMock = mockedArgs[JSON.stringify(args)]
     if (matchingMock) {
       const { delay, status, error, responseData } = matchingMock

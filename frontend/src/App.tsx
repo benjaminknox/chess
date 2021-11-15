@@ -6,7 +6,12 @@ import { LoginFormContainer } from '@pages/auth/LoginFormContainer'
 
 export function App() {
   return (
-    <Grid justifyContent='center' display='flex' alignItems='center' style={{ height: '100%' }}>
+    <Grid
+      justifyContent='center'
+      display='flex'
+      alignItems='center'
+      style={{ height: '100%' }}
+    >
       <ProtectedRoute exact path={'/'} component={() => <div data-cy='home'>Home</div>} />
       <Route exact path={'/login'} component={LoginFormContainer} />
     </Grid>
