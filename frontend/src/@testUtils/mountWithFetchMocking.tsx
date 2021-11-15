@@ -71,7 +71,7 @@ function setupFetchMocks(mocks: FetchMock[]): Cypress.Agent<SinonStub> {
       }
       return {
         status: status || 200,
-        data: responseData || {},
+        json: () => responseData || {},
       }
     } else {
       throwFetchMocks(mocks, args)

@@ -1,15 +1,24 @@
 import * as React from 'react'
+import { Auth } from '@store/auth'
 import { LoginFormContainer } from '.'
 import { mount } from '@cypress/react'
+import { createStoreon } from 'storeon'
+import { StoreContext } from 'storeon/react'
 import { mountWithFetchMocking } from '@testUtils'
+import { BrowserRouter } from 'react-router-dom'
 import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
 
 describe('LoginFormContainer', () => {
+  let store : any;
   const testUser = 'testUser'
   const basePath = 'http://test'
   const testPassword = 'testPassword'
   const loginPath = `${basePath}/api/jwt/login`
   const auth: string = btoa(`${testUser}:${testPassword}`)
+
+  beforeEach(() => {
+    store = createStoreon([Auth])
+  })
 
   const typeUserName = () => {
     cy.get('[data-cy="login-form-email"]').type(testUser)
@@ -34,6 +43,39 @@ describe('LoginFormContainer', () => {
         .then(() => {
           //@ts-ignore
           expect(fetchMock).to.be.calledOnce
+        })
+    })
+
+    it('sets the user session on the store', () => {
+      const responseData = {
+        scope: 'test-scope',
+        id_token: 'test-id-token',
+        expires_in: 5000,
+        token_type: 'Bearer',
+        access_token: 'test-access-token',
+        refresh_token: 'test-refresh-token',
+        session_state: 'test-sessions-state-id',
+        refresh_expires_in: 5000,
+        ['not-before-policy']: 0,
+      }
+
+      const fetchMock = mountWithFetchMocking(<TestLoginFormContainer />, {
+        path: loginPath,
+        method: 'POST',
+        inputData: { auth },
+        responseData,
+        headers: {
+          'Content-type': 'application/json',
+        },
+      })
+
+      typeUserName()
+
+      cy.get('[data-cy="login-form-submit"]')
+        .click()
+        .then(() => {
+          //@ts-ignore
+          expect(store.get().Auth.identity).to.equal(responseData)
         })
     })
 
@@ -62,8 +104,8 @@ describe('LoginFormContainer', () => {
         inputData: { auth },
         error: true,
         headers: {
-          'Content-type': 'application/json'
-        }
+          'Content-type': 'application/json',
+        },
       })
 
       cy.get('[data-cy="login-form-submit"]').click()
@@ -84,9 +126,13 @@ describe('LoginFormContainer', () => {
     }
 
     return (
-      <ConfigsProviderForTesting config={configsForUse}>
-        <LoginFormContainer />
-      </ConfigsProviderForTesting>
+      <BrowserRouter>
+        <StoreContext.Provider value={store}>
+          <ConfigsProviderForTesting config={configsForUse}>
+            <LoginFormContainer />
+          </ConfigsProviderForTesting>
+        </StoreContext.Provider>
+      </BrowserRouter>
     )
   }
 })

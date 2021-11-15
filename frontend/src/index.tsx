@@ -1,17 +1,21 @@
 import React from 'react'
 import { App } from './App'
 import ReactDOM from 'react-dom'
+import createStore from '@store'
+import { StoreContext } from 'storeon/react'
 import reportWebVitals from './reportWebVitals'
 import { BrowserRouter } from 'react-router-dom'
 import { ConfigsProvider } from '@common/configs'
 
 ReactDOM.render(
   <React.StrictMode>
-    <ConfigsProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ConfigsProvider>
+    <StoreContext.Provider value={createStore()}>
+      <ConfigsProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ConfigsProvider>
+    </StoreContext.Provider>
   </React.StrictMode>,
   document.getElementById('root')
 )
