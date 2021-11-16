@@ -1,26 +1,33 @@
 import { Auth } from './auth'
 import { createStoreon } from 'storeon'
 import { StoreState, StoreEvents } from '.'
+import { fetchMocking } from '@testUtils/fetchMocking'
 
 describe('Auth Store', () => {
   let store: any
 
+  const identityResponse = {
+    scope: 'test-scope',
+    id_token: 'test-id-token',
+    expires_in: 5000,
+    token_type: 'Bearer',
+    access_token: 'test-access-token',
+    refresh_token: 'test-refresh-token',
+    session_state: 'test-sessions-state-id',
+    refresh_expires_in: 6000,
+    ['not-before-policy']: 0,
+  }
+
   const dispatchToken = () => {
-    store.dispatch('auth/setIdentity', {
-      scope: 'test-scope',
-      id_token: 'test-id-token',
-      expires_in: 5000,
-      token_type: 'Bearer',
-      access_token: 'test-access-token',
-      refresh_token: 'test-refresh-token',
-      session_state: 'test-sessions-state-id',
-      refresh_expires_in: 6000,
-      ['not-before-policy']: 0,
-    })
+    store.dispatch('auth/setIdentity', identityResponse)
   }
 
   beforeEach(() => {
     store = createStoreon<StoreState, StoreEvents>([Auth])
+  })
+
+  afterEach(() => {
+    store.dispatch('auth/resetIdentity')
   })
 
   describe('when updating access token', () => {
@@ -48,15 +55,57 @@ describe('Auth Store', () => {
       //@ts-ignore
       expect(store.get().Auth.session.refreshTokenExpiration).toBe(6000000)
     })
-  })
-  describe('when resetting session', () => {
-    it('resets session', () => {
-      dispatchToken()
-      store.dispatch('auth/resetIdentity')
-      //@ts-ignore
-      expect(store.get().Auth.session).toStrictEqual({})
-      //@ts-ignore
-      expect(store.get().Auth.isAuthenticated).toBe(false)
+
+    describe('when resetting session', () => {
+      it('resets session', () => {
+        dispatchToken()
+        store.dispatch('auth/resetIdentity')
+        //@ts-ignore
+        expect(store.get().Auth.session).toStrictEqual({})
+        //@ts-ignore
+        expect(store.get().Auth.isAuthenticated).toBe(false)
+      })
+    })
+
+    describe('when refreshing token', () => {
+      it('refreshes session', () => {
+        const responseData = {
+          scope: 'test-scope',
+          id_token: 'test-id-token',
+          expires_in: 8000,
+          token_type: 'Bearer',
+          access_token: 'test-access-token',
+          refresh_token: 'test-refresh-token',
+          session_state: 'test-sessions-state-id',
+          refresh_expires_in: 7000,
+          ['not-before-policy']: 0,
+        }
+
+        const apiBasePath = 'http://test'
+
+        const stub = fetchMocking({
+          path: `${apiBasePath}/api/jwt/refresh`,
+          method: 'POST',
+          inputData: {
+            token: identityResponse.refresh_token,
+          },
+          responseData,
+          headers: {
+            'Content-type': 'application/json',
+          },
+        })
+
+        store.dispatch('auth/refreshIdentity', { values: { apiBasePath } })
+
+        setTimeout(() => {
+          //@ts-ignore
+          expect(store.get().Auth.session.refreshTokenExpiration).toBe(7000000)
+          //@ts-ignore
+          expect(store.get().Auth.session.sessionExpiration).toBe(8000000)
+          //@ts-ignore
+          expect(stub).toHaveBeenCalled()
+        })
+      })
     })
   })
 })

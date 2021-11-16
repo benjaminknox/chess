@@ -1,4 +1,6 @@
 import { StoreonModule } from 'storeon'
+import { ConfigsResponse } from '@common'
+import { b } from '@api/common/bodyParamsParser'
 
 interface IdentityProps {
   scope: string
@@ -26,6 +28,7 @@ export interface AuthState {
 export interface AuthEvents {
   ['auth/setIdentity']: IdentityProps
   ['auth/resetIdentity']: void
+  ['auth/refreshIdentity']: ConfigsResponse
 }
 
 export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
@@ -61,4 +64,18 @@ export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
       session: {},
     },
   }))
+
+  store.on('auth/refreshIdentity', (state, configs: ConfigsResponse) => {
+    fetch(`${configs.values?.apiBasePath}/api/jwt/refresh`, {
+      method: 'POST',
+      body: b({
+        token: state.Auth.identity?.refresh_token,
+      }),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    }).then(async (response: any) => {
+      store.dispatch('auth/setIdentity', await response.json())
+    })
+  })
 }

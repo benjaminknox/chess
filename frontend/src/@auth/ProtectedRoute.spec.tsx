@@ -4,6 +4,8 @@ import { mount } from '@cypress/react'
 import { createStoreon } from 'storeon'
 import { StoreContext } from 'storeon/react'
 import { ProtectedRoute } from './ProtectedRoute'
+import { mountWithFetchMocking } from '@testUtils'
+import { ConfigsProviderForTesting } from '@common'
 import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
 
 describe('ProtectedRoute', () => {
@@ -72,6 +74,73 @@ describe('ProtectedRoute', () => {
   })
 
   describe('when user session expires', () => {
+    describe('when refresh token is not expired', () => {
+      it('should not be logged out', () => {
+        let dateNowStub = cy.stub(Date, 'now').callsFake(() => 0)
+        const store = createStoreon([Auth])
+
+        const identityResponse = {
+          scope: 'test-scope',
+          id_token: 'test-id-token',
+          expires_in: 5000,
+          token_type: 'Bearer',
+          access_token: 'test-access-token',
+          refresh_token: 'test-refresh-token',
+          session_state: 'test-sessions-state-id',
+          refresh_expires_in: 10000,
+          ['not-before-policy']: 0,
+        }
+
+        store.dispatch('auth/setIdentity', identityResponse)
+
+        dateNowStub.restore()
+
+        dateNowStub = cy.stub(Date, 'now').callsFake(() => 6000000)
+
+        const responseData = {
+          scope: 'test-scope',
+          id_token: 'test-id-token',
+          expires_in: 10000,
+          token_type: 'Bearer',
+          access_token: 'test-access-token',
+          refresh_token: 'test-refresh-token',
+          session_state: 'test-sessions-state-id',
+          refresh_expires_in: 17000,
+          ['not-before-policy']: 0,
+        }
+
+        const apiBasePath = 'http://test'
+
+        mountWithFetchMocking(
+          <StoreContext.Provider value={store}>
+            <ConfigsProviderForTesting
+              config={{ values: { apiBasePath }, loading: false, failed: false }}
+            >
+              <TestComponent />
+            </ConfigsProviderForTesting>
+          </StoreContext.Provider>,
+          {
+            path: `${apiBasePath}/api/jwt/refresh`,
+            method: 'POST',
+            inputData: {
+              token: identityResponse.refresh_token,
+            },
+            responseData,
+            headers: {
+              'Content-type': 'application/json',
+            },
+          }
+        )
+
+        cy.get('[data-cy=test]').then(() => {
+          // @ts-ignore
+          expect(testLocation.pathname).to.equal('/')
+          //@ts-ignore
+          expect(store.get().Auth.session.refreshTokenExpiration).to.equal(23000000)
+        })
+      })
+    })
+
     describe('when refresh token is expired', () => {
       it('should be logged out', () => {
         const dateNowStub = cy.stub(Date, 'now').callsFake(() => 0)
