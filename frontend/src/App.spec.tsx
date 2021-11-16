@@ -3,6 +3,7 @@ import * as React from 'react'
 import createStoreon from '@store'
 import { mount } from '@cypress/react'
 import { StoreContext } from 'storeon/react'
+import { SinonStub } from 'cypress/types/sinon'
 import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
 
 describe('App', () => {
@@ -13,9 +14,9 @@ describe('App', () => {
     testLocation = {}
   })
 
-  const TestApp = () => (
+  const TestApp = ({ startPath = '/login' }) => (
     <StoreContext.Provider value={store}>
-      <MemoryRouter initialEntries={['/login']} initialIndex={1}>
+      <MemoryRouter initialEntries={[startPath]} initialIndex={1}>
         <App />
         <Route
           path='*'
@@ -40,8 +41,9 @@ describe('App', () => {
   })
 
   describe('when logged in', () => {
-    it('redirects login to home page', () => {
-      mount(<TestApp />)
+    let dateNowStub: SinonStub
+    beforeEach(() => {
+      dateNowStub = cy.stub(Date, 'now').callsFake(() => 0)
 
       store.dispatch('auth/setIdentity', {
         scope: 'test-scope',
@@ -54,6 +56,14 @@ describe('App', () => {
         refresh_expires_in: 5000,
         ['not-before-policy']: 0,
       })
+    })
+
+    afterEach(() => {
+      dateNowStub.restore()
+    })
+
+    it('redirects login to home page', () => {
+      mount(<TestApp />)
 
       cy.get('[data-cy=home]').then(() => {
         // @ts-ignore
@@ -62,20 +72,6 @@ describe('App', () => {
     })
 
     it('should be logged out', () => {
-      const dateNowStub = cy.stub(Date, 'now').callsFake(() => 0)
-
-      store.dispatch('auth/setIdentity', {
-        scope: 'test-scope',
-        id_token: 'test-id-token',
-        expires_in: 5000,
-        token_type: 'Bearer',
-        access_token: 'test-access-token',
-        refresh_token: 'test-refresh-token',
-        session_state: 'test-sessions-state-id',
-        refresh_expires_in: 5000,
-        ['not-before-policy']: 0,
-      })
-
       dateNowStub.restore()
 
       mount(<TestApp />)
@@ -83,6 +79,21 @@ describe('App', () => {
       cy.get('[data-cy=test]').then(() => {
         // @ts-ignore
         expect(testLocation.pathname).to.equal('/login')
+      })
+    })
+
+    describe('when going to logut route', () => {
+      it('should log out', () => {
+        expect(store.get().Auth.isAuthenticated).to.equal(true)
+
+        mount(<TestApp startPath={'/logout'} />)
+
+        cy.get('[data-cy=test]').then(() => {
+          // @ts-ignore
+          expect(testLocation.pathname).to.equal('/login')
+          // @ts-ignore
+          expect(store.get().Auth.isAuthenticated).to.equal(false)
+        })
       })
     })
   })

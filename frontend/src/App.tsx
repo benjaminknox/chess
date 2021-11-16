@@ -1,10 +1,14 @@
 import React from 'react'
-import { Route } from 'react-router-dom'
 import { Grid } from '@mui/material'
+import { Route } from 'react-router-dom'
+import { useStoreon } from 'storeon/react'
+import { Redirect } from 'react-router-dom'
 import { ProtectedRoute } from '@auth/ProtectedRoute'
 import { LoginFormContainer } from '@pages/auth/LoginFormContainer'
 
 export function App() {
+  const { dispatch, Auth } = useStoreon('Auth')
+
   return (
     <Grid
       justifyContent='center'
@@ -13,6 +17,14 @@ export function App() {
       style={{ height: '100%' }}
     >
       <ProtectedRoute exact path={'/'} component={() => <div data-cy='home'>Home</div>} />
+      <ProtectedRoute
+        exact
+        path={'/logout'}
+        component={() => {
+          dispatch('auth/resetIdentity')
+          return <Redirect to='/login' />
+        }}
+      />
       <Route exact path={'/login'} component={LoginFormContainer} />
     </Grid>
   )
