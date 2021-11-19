@@ -36,6 +36,42 @@ describe('app', () => {
       jest.clearAllMocks()
     })
 
+    describe('accessing a route without authorization', () => {
+      it('throws a 401 auth error', async () => {
+        //@ts-ignore
+        axios.mockImplementation(() =>
+          Promise.reject({
+            response: {
+              status: 401,
+            },
+          })
+        )
+
+        const response = await request(app.callback()).get('/games').send()
+
+        expect(response.status).toBe(401)
+        expect(response.text).toBe('Unauthorized')
+      })
+    })
+
+    describe('accessing a route with authorization', () => {
+      it('allows access to route', async () => {
+        //@ts-ignore
+        axios.mockImplementation(() =>
+          Promise.resolve({
+            response: {
+              status: 200,
+            },
+          })
+        )
+
+        const response = await request(app.callback()).get('/games').send()
+
+        expect(response.status).toBe(200)
+        expect(response.text).toBe('games!')
+      })
+    })
+
     describe('when the user is not valid', () => {
       beforeEach(() => {
         //@ts-ignore

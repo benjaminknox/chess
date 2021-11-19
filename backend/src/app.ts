@@ -8,21 +8,43 @@ import { default as Koa, Context, Next } from 'koa'
 
 const app: Koa = new Koa()
 
-app.use(bodyParser())
-app.use(cors({ origin: '*' }))
-
 app.use(async (ctx: Context, next: Next) => {
   // Log the request to the console
   console.log('Url:', ctx.url)
-
   // Pass the request to the next middleware function
   await next()
 })
+
+app.use(async (ctx: Context, next: Next) => {
+  if (ctx.url === '/' || ctx.url.startsWith('/api/jwt')) {
+    await next()
+  } else {
+    await axios({
+      url: config.oauthValidationUrl,
+      method: 'POST',
+      headers: {
+        authorization: ctx.request.header.authorization ?? '',
+      },
+    })
+      .then((response: any) => next())
+      .catch((error: any) => {
+        ctx.status = 401
+      })
+  }
+})
+
+app.use(bodyParser())
+app.use(cors({ origin: '*' }))
 
 const router: Router = new Router()
 
 router.get('/', async (ctx: Context) => {
   ctx.body = '{"🦸" :" ♚ ♛ ♜ ♝ ♞ ♟", "🤸":"♔ ♕ ♖ ♗ ♘ ♙"}'
+})
+
+router.get('/games', async (ctx: Context) => {
+  ctx.body = 'games!'
+  ctx.status = 200
 })
 
 router.post('/api/jwt/login', async (ctx: Context) => {
