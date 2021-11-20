@@ -15,10 +15,12 @@ app.use(async (ctx: Context, next: Next) => {
   await next()
 })
 
+function authRequired(ctx: Context): boolean {
+  return ctx.url !== '/' && !ctx.url.startsWith('/api/jwt')
+}
+
 app.use(async (ctx: Context, next: Next) => {
-  if (ctx.url === '/' || ctx.url.startsWith('/api/jwt')) {
-    await next()
-  } else {
+  if (authRequired(ctx)) {
     await axios({
       url: config.oauthValidationUrl,
       method: 'POST',
@@ -30,6 +32,8 @@ app.use(async (ctx: Context, next: Next) => {
       .catch((error: any) => {
         ctx.status = 401
       })
+  } else {
+    await next()
   }
 })
 
@@ -40,6 +44,28 @@ const router: Router = new Router()
 
 router.get('/', async (ctx: Context) => {
   ctx.body = '{"🦸" :" ♚ ♛ ♜ ♝ ♞ ♟", "🤸":"♔ ♕ ♖ ♗ ♘ ♙"}'
+})
+
+router.get('/users', async (ctx: Context) => {
+  const admin: any = await axios({
+    url: `${config.keycloakUri}/auth/realms/${config.keycloakRealm}/protocol/openid-connect/token`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    data: qs.stringify({
+      client_id: config.oauthClientId,
+      grant_type: 'client_credentials',
+      client_secret: config.oauthClientSecret,
+    }),
+  })
+
+  await axios({
+    url: `${config.keycloakUri}/auth/admin/realms/${config.keycloakRealm}/users`,
+    method: 'GET',
+    headers: { authorization: `${admin.data.token_type} ${admin.data.access_token}` },
+  }).then((response: any) => {
+    ctx.body = response.data
+    ctx.status = 200
+  })
 })
 
 router.get('/games', async (ctx: Context) => {
