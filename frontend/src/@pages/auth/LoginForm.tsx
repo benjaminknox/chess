@@ -62,7 +62,7 @@ export function LoginForm({
       spacing={1}
     >
       <Grid item xs data-cy='login-form-header'>
-        <Typography variant='h6'>Welcome to Chess</Typography>
+        <Typography variant='h6'>Welcome To Chess</Typography>
       </Grid>
       <Space size={20} />
       <Grid item xs>

@@ -1,3 +1,4 @@
+import { Andada, Epilogue } from '@fonts'
 import { createTheme } from '@mui/material/styles'
 
 const coolers = {
@@ -17,6 +18,7 @@ const colorScheme = {
 }
 
 const css = {
+  fallbacks: [...Andada, ...Epilogue],
   'html,body,#root': {
     margin: '0',
     padding: '0',
@@ -29,8 +31,19 @@ const css = {
 const Theme = createTheme({
   components: {
     MuiCssBaseline: {
-      styleOverrides: css
+      styleOverrides: css,
     },
+  },
+  typography: {
+    fontFamily: 'Epilogue',
+    ...Object.fromEntries(
+      ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].map(key => [
+        key,
+        {
+          fontFamily: 'Andada',
+        },
+      ])
+    ),
   },
   palette: {
     primary: {

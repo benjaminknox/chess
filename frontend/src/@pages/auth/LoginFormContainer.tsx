@@ -31,7 +31,7 @@ export function LoginFormContainer() {
           setLoading(false)
         })
         .catch(() => {
-          setSubmitFailed("Couldn't sign in, try again.")
+          setSubmitFailed("Couldn't sign in, try again")
         })
     } else {
       console.warn('Config values not present')
