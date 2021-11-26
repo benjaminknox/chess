@@ -2,20 +2,26 @@ import React from 'react'
 import { App } from './App'
 import ReactDOM from 'react-dom'
 import createStore from '@store'
+import { Theme } from '@shared/Theme'
 import { StoreContext } from 'storeon/react'
 import reportWebVitals from './reportWebVitals'
 import { BrowserRouter } from 'react-router-dom'
 import { ConfigsProvider } from '@common/configs'
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from "@mui/material/CssBaseline";
 
 ReactDOM.render(
   <React.StrictMode>
-    <StoreContext.Provider value={createStore()}>
-      <ConfigsProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ConfigsProvider>
-    </StoreContext.Provider>
+    <ThemeProvider theme={Theme}>
+      <CssBaseline />
+      <StoreContext.Provider value={createStore()}>
+        <ConfigsProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ConfigsProvider>
+      </StoreContext.Provider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )
