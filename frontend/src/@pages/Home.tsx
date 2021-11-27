@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Space } from '@shared'
+import { Space } from '@components'
 import { Link } from 'react-router-dom'
 import { makeStyles } from '@mui/styles'
 import { Grid, Fab } from '@mui/material'
@@ -39,7 +39,7 @@ export function Home() {
           variant='extended'
           color='primary'
           component={Link}
-          to='/new-game'
+          to='/new-game/select-opponent'
           data-cy='start-a-new-game'
         >
           <AddIcon className={classes.fabAddIcon} />

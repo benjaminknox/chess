@@ -78,9 +78,9 @@ describe('App', () => {
         it('should go to new game form route', () => {
           cy.get('[data-cy=home]')
           cy.get('[data-cy=start-a-new-game]').click()
-          cy.get('[data-cy=select-user]').then(() => {
+          cy.get('[data-cy=user-list-select]').then(() => {
             // @ts-ignore
-            expect(testLocation.pathname).to.equal('/new-game')
+            expect(testLocation.pathname).to.equal('/new-game/select-opponent')
           })
         })
       })

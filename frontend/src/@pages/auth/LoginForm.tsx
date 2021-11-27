@@ -1,4 +1,4 @@
-import { Space } from '@shared'
+import { Space } from '@components'
 import React, { useState } from 'react'
 import { makeStyles } from '@mui/styles'
 import { LoadingButton } from '@mui/lab'

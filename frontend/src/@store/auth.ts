@@ -1,6 +1,7 @@
 import { StoreonModule } from 'storeon'
 import { ConfigsResponse } from '@common'
 import { b } from '@api/common/bodyParamsParser'
+import { fetchMocking } from '@testUtils/fetchMocking'
 
 interface IdentityProps {
   scope: string
@@ -14,7 +15,7 @@ interface IdentityProps {
   ['not-before-policy']: number
 }
 
-export interface AuthState {
+export type AuthState = {
   Auth: {
     identity?: IdentityProps
     isAuthenticated: boolean

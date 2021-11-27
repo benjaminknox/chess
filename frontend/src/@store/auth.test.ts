@@ -2,21 +2,12 @@ import { Auth } from './auth'
 import { createStoreon } from 'storeon'
 import { StoreState, StoreEvents } from '.'
 import { fetchMocking } from '@testUtils/fetchMocking'
+import { fakeIdentity } from '@testUtils/fakeIdentity'
 
 describe('Auth Store', () => {
   let store: any
 
-  const identityResponse = {
-    scope: 'test-scope',
-    id_token: 'test-id-token',
-    expires_in: 5000,
-    token_type: 'Bearer',
-    access_token: 'test-access-token',
-    refresh_token: 'test-refresh-token',
-    session_state: 'test-sessions-state-id',
-    refresh_expires_in: 6000,
-    ['not-before-policy']: 0,
-  }
+  const identityResponse = fakeIdentity
 
   const dispatchToken = () => {
     store.dispatch('auth/setIdentity', identityResponse)

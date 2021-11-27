@@ -5,12 +5,12 @@ import { validateToken, logUrl } from 'middlewares'
 import { jwtRouter, homeRouter, userRouter } from 'router'
 
 const app: Koa = new Koa()
+app.use(cors())
 
 app.use(logUrl)
 app.use(validateToken)
 
 app.use(bodyParser())
-app.use(cors({ origin: '*' }))
 
 app.use(jwtRouter.routes())
 app.use(homeRouter.routes())

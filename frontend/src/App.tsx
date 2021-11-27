@@ -1,9 +1,9 @@
 import React from 'react'
-import { Home } from '@pages/Home'
 import { Grid } from '@mui/material'
 import { Route } from 'react-router-dom'
 import { useStoreon } from 'storeon/react'
 import { Redirect } from 'react-router-dom'
+import { Home, SelectOpponent } from '@pages'
 import { ProtectedRoute } from '@auth/ProtectedRoute'
 import { LoginFormContainer } from '@pages/auth/LoginFormContainer'
 
@@ -20,8 +20,8 @@ export function App() {
       <ProtectedRoute exact path={'/'} component={Home} />
       <ProtectedRoute
         exact
-        path={'/new-game'}
-        component={() => <div data-cy='select-user'>Select a user!</div>}
+        path={'/new-game/select-opponent'}
+        component={SelectOpponent}
       />
       <ProtectedRoute
         exact
