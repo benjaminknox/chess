@@ -8,7 +8,7 @@ import reportWebVitals from './reportWebVitals'
 import { BrowserRouter } from 'react-router-dom'
 import { ConfigsProvider } from '@common/configs'
 import { ThemeProvider } from '@mui/material/styles'
-import CssBaseline from "@mui/material/CssBaseline";
+import CssBaseline from '@mui/material/CssBaseline'
 
 ReactDOM.render(
   <React.StrictMode>

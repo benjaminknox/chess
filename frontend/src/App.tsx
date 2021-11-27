@@ -1,4 +1,5 @@
 import React from 'react'
+import { Home } from '@pages/Home'
 import { Grid } from '@mui/material'
 import { Route } from 'react-router-dom'
 import { useStoreon } from 'storeon/react'
@@ -16,7 +17,12 @@ export function App() {
       alignItems='center'
       style={{ height: '100%' }}
     >
-      <ProtectedRoute exact path={'/'} component={() => <div data-cy='home'>Home</div>} />
+      <ProtectedRoute exact path={'/'} component={Home} />
+      <ProtectedRoute
+        exact
+        path={'/new-game'}
+        component={() => <div data-cy='select-user'>Select a user!</div>}
+      />
       <ProtectedRoute
         exact
         path={'/logout'}

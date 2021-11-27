@@ -3,5 +3,6 @@ export type FontFace = {
     src: string
     fontStyle?: string
     fontFamily: string
+    fontKerning?: string
   }
 }

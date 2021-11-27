@@ -62,37 +62,54 @@ describe('App', () => {
       dateNowStub.restore()
     })
 
-    it('redirects login to home page', () => {
-      mount(<TestApp />)
+    describe('when user session is valid', () => {
+      beforeEach(() => {
+        mount(<TestApp />)
+      })
 
-      cy.get('[data-cy=home]').then(() => {
-        // @ts-ignore
-        expect(testLocation.pathname).to.equal('/')
+      it('redirects login to home page', () => {
+        cy.get('[data-cy=home]').then(() => {
+          // @ts-ignore
+          expect(testLocation.pathname).to.equal('/')
+        })
+      })
+
+      describe('when clicking on new game button', () => {
+        it('should go to new game form route', () => {
+          cy.get('[data-cy=home]')
+          cy.get('[data-cy=start-a-new-game]').click()
+          cy.get('[data-cy=select-user]').then(() => {
+            // @ts-ignore
+            expect(testLocation.pathname).to.equal('/new-game')
+          })
+        })
+      })
+
+      describe('when going to logut route', () => {
+        it('should log out', () => {
+          expect(store.get().Auth.isAuthenticated).to.equal(true)
+
+          mount(<TestApp startPath={'/logout'} />)
+
+          cy.get('[data-cy=test]').then(() => {
+            // @ts-ignore
+            expect(testLocation.pathname).to.equal('/login')
+            // @ts-ignore
+            expect(store.get().Auth.isAuthenticated).to.equal(false)
+          })
+        })
       })
     })
 
-    it('should be logged out', () => {
-      dateNowStub.restore()
+    describe('when user session is not valid', () => {
+      it('should be logged out after expiring session', () => {
+        dateNowStub.restore()
 
-      mount(<TestApp />)
-
-      cy.get('[data-cy=test]').then(() => {
-        // @ts-ignore
-        expect(testLocation.pathname).to.equal('/login')
-      })
-    })
-
-    describe('when going to logut route', () => {
-      it('should log out', () => {
-        expect(store.get().Auth.isAuthenticated).to.equal(true)
-
-        mount(<TestApp startPath={'/logout'} />)
+        mount(<TestApp />)
 
         cy.get('[data-cy=test]').then(() => {
           // @ts-ignore
           expect(testLocation.pathname).to.equal('/login')
-          // @ts-ignore
-          expect(store.get().Auth.isAuthenticated).to.equal(false)
         })
       })
     })
