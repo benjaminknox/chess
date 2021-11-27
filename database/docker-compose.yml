@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  chess-mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    volumes:
+      - chess-mongodb-data:/data/db
+
+volumes:
+  chess-mongodb-data:
