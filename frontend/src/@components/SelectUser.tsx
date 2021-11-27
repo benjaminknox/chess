@@ -11,8 +11,8 @@ import {
 
 const useStyles = makeStyles({
   userSelect: {
-    background: '#FFF'
-  }
+    background: '#FFF',
+  },
 })
 
 export interface SelectUserProps {
