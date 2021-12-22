@@ -7,7 +7,7 @@ homeRouter.get('/', async (ctx: Context) => {
   ctx.body = '{"🦸" :" ♚ ♛ ♜ ♝ ♞ ♟", "🤸":"♔ ♕ ♖ ♗ ♘ ♙"}'
 })
 
-homeRouter.get('/games', async (ctx: Context) => {
+homeRouter.get('/play-games', async (ctx: Context) => {
   ctx.body = 'games!'
   ctx.status = 200
 })

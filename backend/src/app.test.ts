@@ -33,7 +33,7 @@ describe('app', () => {
           })
         )
 
-        const response = await request(app.callback()).get('/games').send()
+        const response = await request(app.callback()).get('/play-games').send()
 
         expect(response.status).toBe(401)
         expect(response.text).toBe('Unauthorized')
@@ -51,7 +51,7 @@ describe('app', () => {
       })
 
       it('allows access to route', async () => {
-        const response = await request(app.callback()).get('/games').send()
+        const response = await request(app.callback()).get('/play-games').send()
 
         expect(response.status).toBe(200)
         expect(response.text).toBe('games!')

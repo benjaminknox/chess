@@ -7,6 +7,7 @@ const config: IConfig = {
   keycloakUri: 'http://keycloak-uri',
   oauthClientUrl: 'http://test-client',
   oauthClientSecret: 'test-client-secret',
+  mongodbConnection: 'mongodb://test-uri',
   oauthValidationUrl: 'http://test-client/validate',
 }
 
