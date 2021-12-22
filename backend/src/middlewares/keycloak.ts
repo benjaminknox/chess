@@ -1,5 +1,5 @@
 import axios from 'axios'
-import config from 'config'
+import { getConfig } from 'config'
 import { Context, Next } from 'koa'
 
 function authRequired(ctx: Context): boolean {
@@ -9,7 +9,7 @@ function authRequired(ctx: Context): boolean {
 const validateToken = async (ctx: Context, next: Next) => {
   if (authRequired(ctx)) {
     await axios({
-      url: config.oauthValidationUrl,
+      url: getConfig().oauthValidationUrl,
       method: 'POST',
       headers: {
         authorization: ctx.request.header.authorization ?? '',

@@ -1,19 +1,30 @@
 import cors from '@koa/cors'
+import { database } from 'bootstrap'
 import { default as Koa } from 'koa'
 import bodyParser from 'koa-bodyparser'
 import { validateToken, logUrl } from 'middlewares'
-import { jwtRouter, homeRouter, userRouter } from 'router'
+import { jwtRouter, homeRouter, userRouter, gamesRouter } from 'router'
 
-const app: Koa = new Koa()
-app.use(cors())
+const app = () => {
+  const koa: Koa = new Koa()
 
-app.use(logUrl)
-app.use(validateToken)
+  database()
+  
+  koa.use(cors())
+  
+  koa.use(logUrl)
+  koa.use(validateToken)
 
-app.use(bodyParser())
+  koa.use(bodyParser())
 
-app.use(jwtRouter.routes())
-app.use(homeRouter.routes())
-app.use(userRouter.routes())
+  koa.use(jwtRouter.routes())
+  koa.use(homeRouter.routes())
+  koa.use(userRouter.routes())
+  koa.use(userRouter.routes())
+  koa.use(gamesRouter.routes())
+
+  return koa
+}
 
 export default app
+

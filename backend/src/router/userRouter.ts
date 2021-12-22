@@ -1,7 +1,7 @@
 import qs from 'qs'
 import axios from 'axios'
-import config from 'config'
 import { Context } from 'koa'
+import { getConfig } from 'config'
 import { default as Router } from 'koa-router'
 
 const userRouter: Router = new Router({
@@ -9,6 +9,8 @@ const userRouter: Router = new Router({
 })
 
 userRouter.get('/', async (ctx: Context) => {
+  const config = getConfig()
+
   const admin: any = await axios({
     url: `${config.keycloakUri}/auth/realms/${config.keycloakRealm}/protocol/openid-connect/token`,
     method: 'POST',

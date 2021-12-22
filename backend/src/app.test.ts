@@ -1,9 +1,6 @@
 import qs from 'qs'
 import axios from 'axios'
 import request from 'supertest'
-import config, { IConfig } from 'config'
-
-jest.mock('config')
 
 const token = 'test-token'
 const authResponseBody = { access_token: token }
@@ -33,7 +30,7 @@ describe('app', () => {
           })
         )
 
-        const response = await request(app.callback()).get('/games').send()
+        const response = await request(app().callback()).get('/play-games').send()
 
         expect(response.status).toBe(401)
         expect(response.text).toBe('Unauthorized')
@@ -51,7 +48,7 @@ describe('app', () => {
       })
 
       it('allows access to route', async () => {
-        const response = await request(app.callback()).get('/games').send()
+        const response = await request(app().callback()).get('/play-games').send()
 
         expect(response.status).toBe(200)
         expect(response.text).toBe('games!')

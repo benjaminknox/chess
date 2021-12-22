@@ -2,9 +2,10 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+import { getConfig } from 'config'
+
 import app from './app'
-import { config } from 'config'
 
-app.listen(config.port)
+app().listen(getConfig().port)
 
-console.log(`Server running on port ${config.port} 🚀`)
+console.log(`Server running on port ${getConfig().port} 🚀`)

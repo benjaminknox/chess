@@ -1,9 +1,7 @@
 import qs from 'qs'
 import axios from 'axios'
 import request from 'supertest'
-import config, { IConfig } from 'config'
-
-jest.mock('config')
+import { getConfig, IConfig } from 'config'
 
 const token = 'test-token'
 const authResponseBody = { access_token: token }
@@ -13,12 +11,14 @@ jest.mock('axios')
 import app from 'app'
 
 describe('jwtRouter', () => {
+  let config: IConfig = getConfig()
+
   describe('when logging in', () => {
     const getAuthString = (username: string, password: string) =>
       Buffer.from(`${username}:${password}`).toString('base64')
 
     const login = async (auth: string) =>
-      await request(app.callback()).post('/api/jwt/login').send({ auth })
+      await request(app().callback()).post('/api/jwt/login').send({ auth })
 
     afterEach(() => {
       jest.resetAllMocks()
@@ -102,7 +102,9 @@ describe('jwtRouter', () => {
     })
 
     const refresh = async () =>
-      await request(app.callback()).post('/api/jwt/refresh').send({ token: refreshToken })
+      await request(app().callback())
+        .post('/api/jwt/refresh')
+        .send({ token: refreshToken })
 
     describe('when using an invalid refresh token', () => {
       beforeEach(() => {

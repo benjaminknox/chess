@@ -1,6 +1,6 @@
 import qs from 'qs'
 import axios from 'axios'
-import config from 'config'
+import { getConfig } from 'config'
 import { Context } from 'koa'
 import { default as Router } from 'koa-router'
 
@@ -12,6 +12,8 @@ jwtRouter.post('/login', async (ctx: Context) => {
   const [username, password] = Buffer.from(ctx.request.body.auth, 'base64')
     .toString('utf-8')
     .split(':')
+
+  const config = getConfig()
 
   await axios({
     url: config.oauthClientUrl,
@@ -36,6 +38,8 @@ jwtRouter.post('/login', async (ctx: Context) => {
 })
 
 jwtRouter.post('/refresh', async (ctx: Context) => {
+  const config = getConfig()
+
   await axios({
     url: config.oauthClientUrl,
     method: 'POST',

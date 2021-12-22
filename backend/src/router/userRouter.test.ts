@@ -1,9 +1,7 @@
 import qs from 'qs'
 import axios from 'axios'
 import request from 'supertest'
-import config, { IConfig } from 'config'
-
-jest.mock('config')
+import { getConfig, IConfig } from 'config'
 
 const token = 'test-token'
 const authResponseBody = { access_token: token }
@@ -13,6 +11,8 @@ jest.mock('axios')
 import app from 'app'
 
 describe('userRouter', () => {
+  let config : IConfig = getConfig()
+
   describe('when accessing users', () => {
     const keyCloakServiceTokenUrl = `${config.keycloakUri}/auth/realms/${config.keycloakRealm}/protocol/openid-connect/token`
     const keyCloakServiceTokenResp = {
@@ -92,7 +92,7 @@ describe('userRouter', () => {
     })
 
     it('gets other users to play', async () => {
-      const response = await request(app.callback()).get('/users').send()
+      const response = await request(app().callback()).get('/users').send()
 
       expect(response.status).toBe(200)
       expect(response.body).toStrictEqual(userListResponse)
