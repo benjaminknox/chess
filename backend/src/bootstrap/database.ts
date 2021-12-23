@@ -7,10 +7,9 @@ export const database = async () => {
   const mongodbConnection = getConfig().mongodbConnection
   if (mongodbConnection) {
     try {
-      await mongoose.connect(mongodbConnection, { dbName: "chess"})
+      await mongoose.connect(mongodbConnection, { dbName: 'chess' })
 
-      console.log("Successfully connected to the database.");
-
+      console.log('Successfully connected to the database.')
     } catch (ex: any) {
       if (ex.codeName === 'AuthenticationFailed') {
         console.error('Could not authenticate with mongodb')

@@ -27,7 +27,7 @@ const defaultConfig: IConfig = {
 export const testConfig: IConfig = {
   port: 3000,
   keycloakRealm: 'test-realm',
-  mongodbConnection: "test-uri",
+  mongodbConnection: 'test-uri',
   oauthClientId: 'test-client-id',
   keycloakUri: 'http://keycloak-uri',
   oauthClientUrl: 'http://test-client',

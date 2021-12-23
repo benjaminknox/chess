@@ -11,7 +11,7 @@ jest.mock('axios')
 import app from 'app'
 
 describe('userRouter', () => {
-  let config : IConfig = getConfig()
+  let config: IConfig = getConfig()
 
   describe('when accessing users', () => {
     const keyCloakServiceTokenUrl = `${config.keycloakUri}/auth/realms/${config.keycloakRealm}/protocol/openid-connect/token`

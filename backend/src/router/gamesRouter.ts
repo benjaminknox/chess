@@ -6,22 +6,20 @@ const gameRouter: Router = new Router({
   prefix: '/games',
 })
 
-gameRouter.get('/', async (ctx: Context) => {
+gameRouter.post('/', async (ctx: Context) => {
+  const white_player = ctx.request.body.white_player
+  const black_player = ctx.request.body.black_player
+
   const game = await GameModel.create({
-    white_player: 'player1',
-    black_player: 'player2',
-    moves: [
-      {
-        move: 'example-move-key',
-        move_number: 1,
-      },
-    ],
+    white_player,
+    black_player,
+    moves: [],
   })
 
   try {
     const getGame = await GameModel.findById(game._id).exec()
     ctx.body = getGame
-  } catch(ex) {
+  } catch (ex) {
     console.log(ex)
   }
 

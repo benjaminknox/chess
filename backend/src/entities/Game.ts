@@ -1,7 +1,13 @@
-import { uuid } from 'uuidv4';
-import { prop, modelOptions, getModelForClass, DocumentType, Severity } from '@typegoose/typegoose';
+import { uuid } from 'uuidv4'
+import {
+  prop,
+  modelOptions,
+  getModelForClass,
+  DocumentType,
+  Severity,
+} from '@typegoose/typegoose'
 
-@modelOptions({options: {allowMixed: Severity.ALLOW}})
+@modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Game {
   @prop({ default: () => uuid() })
   public id: string

@@ -9,9 +9,9 @@ const app = () => {
   const koa: Koa = new Koa()
 
   database()
-  
+
   koa.use(cors())
-  
+
   koa.use(logUrl)
   koa.use(validateToken)
 
@@ -27,4 +27,3 @@ const app = () => {
 }
 
 export default app
-
