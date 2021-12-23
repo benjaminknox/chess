@@ -3,8 +3,8 @@ import { Grid } from '@mui/material'
 import { Route } from 'react-router-dom'
 import { useStoreon } from 'storeon/react'
 import { Redirect } from 'react-router-dom'
-import { Home, SelectOpponent } from '@pages'
 import { ProtectedRoute } from '@auth/ProtectedRoute'
+import { Home, SelectOpponent, SelectSide } from '@pages'
 import { LoginFormContainer } from '@pages/auth/LoginFormContainer'
 
 export function App() {
@@ -23,6 +23,7 @@ export function App() {
         path={'/new-game/select-opponent'}
         component={SelectOpponent}
       />
+      <ProtectedRoute exact path={'/new-game/:uid/select-side'} component={SelectSide} />
       <ProtectedRoute
         exact
         path={'/logout'}
