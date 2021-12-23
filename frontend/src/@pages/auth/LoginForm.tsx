@@ -53,55 +53,58 @@ export function LoginForm({
   }
 
   return (
-    <Grid
-      container
-      direction='column'
-      className={classes.loginWrapper}
-      data-cy='login-form-wrapper'
-      component={Paper}
-      spacing={1}
-    >
-      <Grid item xs data-cy='login-form-header'>
-        <Typography variant='h6'>Welcome To Chess</Typography>
+    <form>
+      <Grid
+        container
+        direction='column'
+        className={classes.loginWrapper}
+        data-cy='login-form-wrapper'
+        component={Paper}
+        spacing={1}
+      >
+        <Grid item xs data-cy='login-form-header'>
+          <Typography variant='h6'>Welcome To Chess</Typography>
+        </Grid>
+        <Space size={20} />
+        <Grid item xs>
+          <TextField
+            data-cy='login-form-email'
+            error={!!emailFailed}
+            helperText={emailFailed && emailFailed}
+            label='email'
+            value={username}
+            onChange={evt => setUsername(evt.target.value)}
+          />
+        </Grid>
+        <Grid item xs>
+          <TextField
+            data-cy='login-form-password'
+            error={!!passwordFailed}
+            helperText={passwordFailed && passwordFailed}
+            type='password'
+            label='password'
+            value={password}
+            onChange={evt => setPassword(evt.target.value)}
+          />
+        </Grid>
+        {renderSubmitFailed()}
+        <Space size={20} />
+        <Grid item xs>
+          <LoadingButton
+            type='submit'
+            loading={loading}
+            variant='contained'
+            data-cy='login-form-submit'
+            disableElevation
+            onClick={() => {
+              sendLoginForm()
+            }}
+          >
+            Sign in
+          </LoadingButton>
+        </Grid>
+        <Space size={20} />
       </Grid>
-      <Space size={20} />
-      <Grid item xs>
-        <TextField
-          data-cy='login-form-email'
-          error={!!emailFailed}
-          helperText={emailFailed && emailFailed}
-          label='email'
-          value={username}
-          onChange={evt => setUsername(evt.target.value)}
-        />
-      </Grid>
-      <Grid item xs>
-        <TextField
-          data-cy='login-form-password'
-          error={!!passwordFailed}
-          helperText={passwordFailed && passwordFailed}
-          type='password'
-          label='password'
-          value={password}
-          onChange={evt => setPassword(evt.target.value)}
-        />
-      </Grid>
-      {renderSubmitFailed()}
-      <Space size={20} />
-      <Grid item xs>
-        <LoadingButton
-          loading={loading}
-          variant='contained'
-          data-cy='login-form-submit'
-          disableElevation
-          onClick={() => {
-            sendLoginForm()
-          }}
-        >
-          Sign in
-        </LoadingButton>
-      </Grid>
-      <Space size={20} />
-    </Grid>
+    </form>
   )
 }

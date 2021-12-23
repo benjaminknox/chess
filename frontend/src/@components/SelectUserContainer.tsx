@@ -60,7 +60,12 @@ export function SelectUserContainer({ selectOpponent }: SelectUserContainerProps
       </Grid>
       <Space size={94} />
       <Grid item className={classes.center}>
-        <Fab color='primary' data-cy='user-list-submit' onClick={startGame} disabled={!selectedUser}>
+        <Fab
+          color='primary'
+          data-cy='user-list-submit'
+          onClick={startGame}
+          disabled={!selectedUser}
+        >
           <ForwardIcon className={classes.fabForwardIcon} />
         </Fab>
       </Grid>

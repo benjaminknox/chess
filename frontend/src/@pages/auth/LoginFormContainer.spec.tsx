@@ -27,7 +27,7 @@ describe('LoginFormContainer', () => {
   }
 
   describe('when username and password is valid', () => {
-    it('submits the values of username and password', () => {
+    const mountAndType = () => {
       const fetchMock = mountWithFetchMocking(<TestLoginFormContainer />, {
         path: loginPath,
         method: 'POST',
@@ -39,8 +39,25 @@ describe('LoginFormContainer', () => {
 
       typeUserName()
 
+      return fetchMock
+    }
+
+    it('submits the values of username and password', () => {
+      const fetchMock = mountAndType()
+
       cy.get('[data-cy="login-form-submit"]')
         .click()
+        .then(() => {
+          //@ts-ignore
+          expect(fetchMock).to.be.calledOnce
+        })
+    })
+
+    it('should submit on enter keypress', () => {
+      const fetchMock = mountAndType()
+
+      cy.get('[data-cy="login-form-password"]')
+        .type('{enter}')
         .then(() => {
           //@ts-ignore
           expect(fetchMock).to.be.calledOnce
