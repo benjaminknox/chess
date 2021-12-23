@@ -40,14 +40,6 @@ describe('SelectUserContiner', () => {
     store.dispatch('users/resetUsers')
   })
 
-  it('shows the user list select', () => {
-    cy.get('[data-cy=user-list-select]').should('exist')
-  })
-
-  it('shows the user next button', () => {
-    cy.get('[data-cy=user-list-submit]').should('exist')
-  })
-
   it('gets the users from api', () => {
     cy.get('[data-cy=user-list-select]').click()
     cy.get('[data-cy=user-4]')
@@ -58,15 +50,37 @@ describe('SelectUserContiner', () => {
       })
   })
 
-  it('starts a game with the selected user', () => {
-    cy.get('[data-cy=user-list-select]').click()
-    cy.get('[data-cy=user-2]').click()
-    cy.get('[data-cy=user-list-submit]')
-      .click()
-      .then(() => {
-        //@ts-ignore
-        expect(selectOpponent).to.be.calledOnce
-      })
+  it('shows the user list select', () => {
+    cy.get('[data-cy=user-list-select]').should('exist')
+  })
+
+  it('shows the user next button', () => {
+    cy.get('[data-cy=user-list-submit]').should('exist')
+  })
+
+  describe('when user is not selected', () => {
+    it('should show disabled next button', () => {
+      cy.get('[data-cy=user-list-submit]').should('be.disabled')
+    })
+  })
+
+  describe('when user is selected', () => {
+    it('should show enabled next button', () => {
+      cy.get('[data-cy=user-list-select]').click()
+      cy.get('[data-cy=user-3]').click()
+      cy.get('[data-cy=user-list-submit]').should('be.enabled')
+    })
+
+    it('starts a game with the selected user', () => {
+      cy.get('[data-cy=user-list-select]').click()
+      cy.get('[data-cy=user-2]').click()
+      cy.get('[data-cy=user-list-submit]')
+        .click()
+        .then(() => {
+          //@ts-ignore
+          expect(selectOpponent).to.be.calledOnce
+        })
+    })
   })
 
   const TestSelectUserContainer = (config: Partial<ConfigsResponse>) => {

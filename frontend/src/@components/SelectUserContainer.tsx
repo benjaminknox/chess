@@ -29,7 +29,7 @@ export function SelectUserContainer({ selectOpponent }: SelectUserContainerProps
   const configs = useConfigs()
   const { dispatch, Users } = useStoreon('Users')
   const [userList, setUserList] = useState<Partial<User>[]>([])
-  const [selectedUser, setSelectedUser] = useState<Partial<User>>({})
+  const [selectedUser, setSelectedUser] = useState<Partial<User> | undefined>(undefined)
 
   useEffect(() => {
     if (configs.values) {
@@ -42,6 +42,7 @@ export function SelectUserContainer({ selectOpponent }: SelectUserContainerProps
   }, [Users])
 
   const updateUser = (user: Partial<User>) => setSelectedUser(user)
+
   const startGame = () => {
     if (selectedUser) {
       selectOpponent(selectedUser as User)
@@ -59,7 +60,7 @@ export function SelectUserContainer({ selectOpponent }: SelectUserContainerProps
       </Grid>
       <Space size={94} />
       <Grid item className={classes.center}>
-        <Fab color='primary' data-cy='user-list-submit' onClick={startGame}>
+        <Fab color='primary' data-cy='user-list-submit' onClick={startGame} disabled={!selectedUser}>
           <ForwardIcon className={classes.fabForwardIcon} />
         </Fab>
       </Grid>
