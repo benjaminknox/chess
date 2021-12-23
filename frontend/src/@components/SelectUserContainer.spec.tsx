@@ -2,6 +2,7 @@ import { User } from '@types'
 import * as React from 'react'
 import createStore from '@store'
 import { StoreContext } from 'storeon/react'
+import { SinonStub } from 'cypress/types/sinon'
 import { BrowserRouter } from 'react-router-dom'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
 import { SelectUserContainer } from './SelectUserContainer'
@@ -12,9 +13,12 @@ describe('SelectUserContiner', () => {
   let store: any
   let fetchMock: any
   const basePath = 'http://test'
+  let selectOpponent: Cypress.Agent<SinonStub>
   let testUserList: Partial<User>[]
 
   beforeEach(() => {
+    selectOpponent = cy.stub()
+
     store = createStore()
     store.dispatch('auth/setIdentity', fakeIdentity)
 
@@ -54,6 +58,17 @@ describe('SelectUserContiner', () => {
       })
   })
 
+  it('starts a game with the selected user', () => {
+    cy.get('[data-cy=user-list-select]').click()
+    cy.get('[data-cy=user-2]').click()
+    cy.get('[data-cy=user-list-submit]')
+      .click()
+      .then(() => {
+        //@ts-ignore
+        expect(selectOpponent).to.be.calledOnce
+      })
+  })
+
   const TestSelectUserContainer = (config: Partial<ConfigsResponse>) => {
     const defaultConfig: ConfigsResponse = {
       values: { apiBasePath: basePath },
@@ -70,7 +85,7 @@ describe('SelectUserContiner', () => {
       <BrowserRouter>
         <StoreContext.Provider value={store}>
           <ConfigsProviderForTesting config={configsForUse}>
-            <SelectUserContainer />
+            <SelectUserContainer selectOpponent={selectOpponent} />
           </ConfigsProviderForTesting>
         </StoreContext.Provider>
       </BrowserRouter>

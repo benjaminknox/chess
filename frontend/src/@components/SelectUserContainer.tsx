@@ -20,7 +20,11 @@ const useStyles = makeStyles({
   },
 })
 
-export function SelectUserContainer() {
+export interface SelectUserContainerProps {
+  selectOpponent: (user: User) => void
+}
+
+export function SelectUserContainer({ selectOpponent }: SelectUserContainerProps) {
   const classes = useStyles()
   const configs = useConfigs()
   const { dispatch, Users } = useStoreon('Users')
@@ -38,6 +42,11 @@ export function SelectUserContainer() {
   }, [Users])
 
   const updateUser = (user: Partial<User>) => setSelectedUser(user)
+  const startGame = () => {
+    if (selectedUser) {
+      selectOpponent(selectedUser as User)
+    }
+  }
 
   return (
     <Grid>
@@ -50,7 +59,7 @@ export function SelectUserContainer() {
       </Grid>
       <Space size={94} />
       <Grid item className={classes.center}>
-        <Fab color='primary' data-cy='user-list-submit'>
+        <Fab color='primary' data-cy='user-list-submit' onClick={startGame}>
           <ForwardIcon className={classes.fabForwardIcon} />
         </Fab>
       </Grid>
