@@ -6,6 +6,7 @@ import { StoreContext } from 'storeon/react'
 import { ProtectedRoute } from './ProtectedRoute'
 import { mountWithFetchMocking } from '@testUtils'
 import { ConfigsProviderForTesting } from '@common'
+import { fakeIdentity } from '@testUtils/fakeIdentity'
 import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
 
 describe('ProtectedRoute', () => {
@@ -48,17 +49,7 @@ describe('ProtectedRoute', () => {
     it('shows protected route', () => {
       const store = createStoreon([Auth])
 
-      store.dispatch('auth/setIdentity', {
-        scope: 'test-scope',
-        id_token: 'test-id-token',
-        expires_in: 5000,
-        token_type: 'Bearer',
-        access_token: 'test-access-token',
-        refresh_token: 'test-refresh-token',
-        session_state: 'test-sessions-state-id',
-        refresh_expires_in: 5000,
-        ['not-before-policy']: 0,
-      })
+      store.dispatch('auth/setIdentity', fakeIdentity)
 
       mount(
         <StoreContext.Provider value={store}>
@@ -80,15 +71,8 @@ describe('ProtectedRoute', () => {
         const store = createStoreon([Auth])
 
         const identityResponse = {
-          scope: 'test-scope',
-          id_token: 'test-id-token',
-          expires_in: 5000,
-          token_type: 'Bearer',
-          access_token: 'test-access-token',
-          refresh_token: 'test-refresh-token',
-          session_state: 'test-sessions-state-id',
+          ...fakeIdentity,
           refresh_expires_in: 10000,
-          ['not-before-policy']: 0,
         }
 
         store.dispatch('auth/setIdentity', identityResponse)
@@ -98,15 +82,9 @@ describe('ProtectedRoute', () => {
         dateNowStub = cy.stub(Date, 'now').callsFake(() => 6000000)
 
         const responseData = {
-          scope: 'test-scope',
-          id_token: 'test-id-token',
+          ...fakeIdentity,
           expires_in: 10000,
-          token_type: 'Bearer',
-          access_token: 'test-access-token',
-          refresh_token: 'test-refresh-token',
-          session_state: 'test-sessions-state-id',
           refresh_expires_in: 17000,
-          ['not-before-policy']: 0,
         }
 
         const apiBasePath = 'http://test'
@@ -146,17 +124,7 @@ describe('ProtectedRoute', () => {
         const dateNowStub = cy.stub(Date, 'now').callsFake(() => 0)
         const store = createStoreon([Auth])
 
-        store.dispatch('auth/setIdentity', {
-          scope: 'test-scope',
-          id_token: 'test-id-token',
-          expires_in: 5000,
-          token_type: 'Bearer',
-          access_token: 'test-access-token',
-          refresh_token: 'test-refresh-token',
-          session_state: 'test-sessions-state-id',
-          refresh_expires_in: 5000,
-          ['not-before-policy']: 0,
-        })
+        store.dispatch('auth/setIdentity', fakeIdentity)
 
         dateNowStub.restore()
 

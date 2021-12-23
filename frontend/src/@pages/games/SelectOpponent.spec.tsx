@@ -1,11 +1,11 @@
 import { User } from '@types'
 import * as React from 'react'
 import createStore from '@store'
-import { SelectOpponent } from './SelectOpponent'
 import { mount } from '@cypress/react'
 import { StoreContext } from 'storeon/react'
-import { MemoryRouter } from 'react-router-dom'
+import { SelectOpponent } from './SelectOpponent'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
+import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
 import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
 import { mountWithFetchMocking, generateUsersList } from '@testUtils'
 
@@ -13,13 +13,14 @@ describe('SelectOpponent', () => {
   let store: any
   let fetchMock: any
   const basePath = 'http://test'
-  let testUserList: Partial<User>[]
+  let testLocation: Location | any = {}
+
+  const testUserList: Partial<User>[] = generateUsersList()
+  const opponent = testUserList[2].id
 
   beforeEach(() => {
     store = createStore()
     store.dispatch('auth/setIdentity', fakeIdentity)
-
-    testUserList = generateUsersList()
 
     fetchMock = mountWithFetchMocking(<TestSelectOpponent />, {
       path: `${basePath}/users`,
@@ -41,6 +42,19 @@ describe('SelectOpponent', () => {
     cy.get('[data-cy="user-list-select"]').should('exist')
   })
 
+  describe('when a user is selected', () => {
+    it('should move to next route', () => {
+      cy.get('[data-cy=user-list-select]').click()
+      cy.get('[data-cy=user-2]').click()
+      cy.get('[data-cy=user-list-submit]')
+        .click()
+        .then(() => {
+          // @ts-ignore
+          expect(testLocation.pathname).to.equal(`/new-game/${opponent}/select-side`)
+        })
+    })
+  })
+
   const TestSelectOpponent = (config: Partial<ConfigsResponse>) => {
     const defaultConfig: ConfigsResponse = {
       values: { apiBasePath: basePath },
@@ -54,11 +68,18 @@ describe('SelectOpponent', () => {
     }
 
     return (
-      <MemoryRouter initialEntries={['/new-game']}>
+      <MemoryRouter initialEntries={['/select-opponent']}>
         <StoreContext.Provider value={store}>
           <ConfigsProviderForTesting config={configsForUse}>
             <SelectOpponent />
           </ConfigsProviderForTesting>
+          <Route
+            path='*'
+            render={({ location }: RouteProps) => {
+              testLocation = location
+              return <div data-cy='test'></div>
+            }}
+          />
         </StoreContext.Provider>
       </MemoryRouter>
     )

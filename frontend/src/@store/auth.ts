@@ -1,5 +1,7 @@
+import jwt_decode from 'jwt-decode'
 import { StoreonModule } from 'storeon'
 import { ConfigsResponse } from '@common'
+import { accessToken } from '@common/types'
 import { b } from '@api/common/bodyParamsParser'
 import { fetchMocking } from '@testUtils/fetchMocking'
 
@@ -17,6 +19,7 @@ interface IdentityProps {
 
 export type AuthState = {
   Auth: {
+    decodedAccessToken?: Partial<accessToken>
     identity?: IdentityProps
     isAuthenticated: boolean
     session: {
@@ -47,6 +50,9 @@ export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
     return {
       ...state,
       Auth: {
+        decodedAccessToken: identity.access_token
+          ? jwt_decode(identity.access_token)
+          : undefined,
         identity,
         isAuthenticated: true,
         session: {
@@ -60,6 +66,7 @@ export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
   store.on('auth/resetIdentity', state => ({
     ...state,
     Auth: {
+      decodedAccessToken: undefined,
       identity: undefined,
       isAuthenticated: false,
       session: {},

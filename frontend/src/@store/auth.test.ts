@@ -3,6 +3,7 @@ import { createStoreon } from 'storeon'
 import { StoreState, StoreEvents } from '.'
 import { fetchMocking } from '@testUtils/fetchMocking'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
+import fakeAccessToken, { decodedFakeAccessToken } from '@testUtils/fakeAccessToken'
 
 describe('Auth Store', () => {
   let store: any
@@ -42,6 +43,13 @@ describe('Auth Store', () => {
       expect(store.get().Auth.session.sessionExpiration).toBe(5000000)
     })
 
+    it('sets decoded access token', () => {
+      setTimeout(() => {
+        //@ts-ignore
+        expect(store.get().Auth.decodedAcessToken).toBe(decodedFakeAccessToken)
+      })
+    })
+
     it('sets refresh token expiration date', () => {
       //@ts-ignore
       expect(store.get().Auth.session.refreshTokenExpiration).toBe(6000000)
@@ -65,7 +73,7 @@ describe('Auth Store', () => {
           id_token: 'test-id-token',
           expires_in: 8000,
           token_type: 'Bearer',
-          access_token: 'test-access-token',
+          access_token: fakeAccessToken,
           refresh_token: 'test-refresh-token',
           session_state: 'test-sessions-state-id',
           refresh_expires_in: 7000,

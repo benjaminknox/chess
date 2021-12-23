@@ -1,9 +1,11 @@
+import fakeAccessToken from './fakeAccessToken'
+
 export const fakeIdentity = {
-  scope: 'test-scope',
-  id_token: 'test-id-token',
   expires_in: 5000,
+  scope: 'test-scope',
   token_type: 'Bearer',
-  access_token: 'test-access-token',
+  id_token: 'test-id-token',
+  access_token: fakeAccessToken,
   refresh_token: 'test-refresh-token',
   session_state: 'test-sessions-state-id',
   refresh_expires_in: 6000,

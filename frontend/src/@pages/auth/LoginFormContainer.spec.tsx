@@ -4,8 +4,9 @@ import { LoginFormContainer } from '.'
 import { mount } from '@cypress/react'
 import { createStoreon } from 'storeon'
 import { StoreContext } from 'storeon/react'
-import { mountWithFetchMocking } from '@testUtils'
 import { BrowserRouter } from 'react-router-dom'
+import { mountWithFetchMocking } from '@testUtils'
+import { fakeIdentity } from '@testUtils/fakeIdentity'
 import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
 
 describe('LoginFormContainer', () => {
@@ -47,17 +48,7 @@ describe('LoginFormContainer', () => {
     })
 
     it('sets the user session on the store', () => {
-      const responseData = {
-        scope: 'test-scope',
-        id_token: 'test-id-token',
-        expires_in: 5000,
-        token_type: 'Bearer',
-        access_token: 'test-access-token',
-        refresh_token: 'test-refresh-token',
-        session_state: 'test-sessions-state-id',
-        refresh_expires_in: 5000,
-        ['not-before-policy']: 0,
-      }
+      const responseData = fakeIdentity
 
       const fetchMock = mountWithFetchMocking(<TestLoginFormContainer />, {
         path: loginPath,
