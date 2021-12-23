@@ -1,10 +1,12 @@
 import { uuid } from 'uuidv4'
+import { GameMove } from 'entities'
+
 import {
   prop,
+  plugin,
+  Severity,
   modelOptions,
   getModelForClass,
-  DocumentType,
-  Severity,
 } from '@typegoose/typegoose'
 
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
@@ -19,10 +21,7 @@ export class Game {
   public black_player: string
 
   @prop({ required: true })
-  public moves: Array<{
-    move: string
-    move_number: number
-  }>
+  public moves: Array<GameMove>
 }
 
 export const GameModel = getModelForClass(Game)

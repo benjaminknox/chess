@@ -32,10 +32,23 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "modulePaths": ["<rootDir>/node_modules", "<rootDir>/src/"],
-    "moduleFileExtensions": ["js", "jsx", "json", "ts", "tsx"],
-    "setupFiles": [ "<rootDir>/src/testUtils/setupFiles.ts" ],
-    "setupFilesAfterEnv": [ "<rootDir>/src/testUtils/setupFilesAfterEnv.ts" ],
+    "modulePaths": [
+      "<rootDir>/node_modules",
+      "<rootDir>/src/"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "ts",
+      "tsx"
+    ],
+    "setupFiles": [
+      "<rootDir>/src/testUtils/setupFiles.ts"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/testUtils/setupFilesAfterEnv.ts"
+    ],
     "collectCoverage": true,
     "collectCoverageFrom": [
       "**/*.{ts,js}",
@@ -54,9 +67,16 @@
         "statements": 100
       }
     },
-    "coverageReporters": ["text", "text-summary"],
+    "coverageReporters": [
+      "text",
+      "text-summary"
+    ],
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(js|ts)x?$",
-    "testPathIgnorePatterns": ["/node_modules/", "/build/", "/coverage/"]
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/build/",
+      "/coverage/"
+    ]
   },
   "scripts": {
     "test": "yarn jest --runInBand --detectOpenHandles",

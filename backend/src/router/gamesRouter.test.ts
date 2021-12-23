@@ -8,7 +8,10 @@ jest.mock('axios')
 import app from 'app'
 
 describe('gamesRouter', () => {
-  beforeEach(() => {
+  const player1 = 'player1'
+  const player2 = 'player2'
+
+  beforeAll(() => {
     //@ts-ignore
     axios.mockImplementation(() =>
       Promise.resolve({
@@ -17,23 +20,22 @@ describe('gamesRouter', () => {
     )
   })
 
-  afterEach(() => {
+  afterAll(() => {
     jest.clearAllMocks()
   })
 
   describe('when creating a game', () => {
     it('creates games with correct players', async () => {
-      const player1 = 'player1'
-      const player2 = 'player2'
+      const server = app()
       const player3 = 'player3'
       const player4 = 'player4'
 
-      await request(app().callback()).post('/games').send({
+      await request(server.callback()).post('/games').send({
         white_player: player1,
         black_player: player2,
       })
 
-      await request(app().callback()).post('/games').send({
+      await request(server.callback()).post('/games').send({
         white_player: player3,
         black_player: player4,
       })
@@ -45,6 +47,38 @@ describe('gamesRouter', () => {
       expect(gameModels[0].black_player).toBe(player2)
       expect(gameModels[1].white_player).toBe(player3)
       expect(gameModels[1].black_player).toBe(player4)
+    })
+  })
+
+  describe('when player moves', () => {
+    it('adds a move to the collection', async () => {
+      const server = app()
+      const gameResponse = await request(server.callback()).post('/games').send({
+        white_player: player1,
+        black_player: player2,
+      })
+
+      const firstMove = 'first-move'
+
+      await request(server.callback()).post(`/games/${gameResponse.body.id}`).send({
+        move: firstMove,
+      })
+
+      const secondMove = 'second-move'
+
+      await request(server.callback()).post(`/games/${gameResponse.body.id}`).send({
+        move: secondMove,
+      })
+
+      const gameModels = await GameModel.find().exec()
+
+      expect(gameModels[0].moves.length).toBe(2)
+
+      expect(gameModels[0].moves[0].move).toBe(firstMove)
+      expect(gameModels[0].moves[0].move_number).toBe(1)
+
+      expect(gameModels[0].moves[1].move).toBe(secondMove)
+      expect(gameModels[0].moves[1].move_number).toBe(2)
     })
   })
 })
