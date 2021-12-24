@@ -10,6 +10,11 @@ import app from 'app'
 describe('gamesRouter', () => {
   const player1 = 'player1'
   const player2 = 'player2'
+  let server: any
+
+  beforeEach(() => {
+    server = app()
+  })
 
   beforeAll(() => {
     //@ts-ignore
@@ -26,7 +31,6 @@ describe('gamesRouter', () => {
 
   describe('when creating a game', () => {
     it('creates games with correct players', async () => {
-      const server = app()
       const player3 = 'player3'
       const player4 = 'player4'
 
@@ -50,9 +54,31 @@ describe('gamesRouter', () => {
     })
   })
 
+  describe('when game exists', () => {
+    it('should return an existing game', async () => {
+      const { id } = (
+        await request(server.callback()).post('/games').send({
+          white_player: player1,
+          black_player: player2,
+        })
+      ).body
+
+      const response = await request(server.callback()).get(`/games/${id}`)
+
+      expect(response.body.id).toStrictEqual(id)
+    })
+  })
+
+  describe("when game doesn't exist", () => {
+    it('should return 404', async () => {
+      const response = await request(server.callback()).get(`/games/test-uuid-for-game`)
+
+      expect(response.statusCode).toBe(404)
+    })
+  })
+
   describe('when player moves', () => {
     it('adds a move to the collection', async () => {
-      const server = app()
       const gameResponse = await request(server.callback()).post('/games').send({
         white_player: player1,
         black_player: player2,

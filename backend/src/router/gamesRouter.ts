@@ -25,6 +25,21 @@ gameRouter.post('/', async (ctx: Context) => {
   }
 })
 
+gameRouter.get('/:id', async (ctx: Context) => {
+  try {
+    const game = await GameModel.findOne({ id: ctx.params.id }).exec()
+
+    if (game) {
+      ctx.body = game
+      ctx.status = 200
+    } else {
+      ctx.status = 404
+    }
+  } catch (ex) {
+    throw ex
+  }
+})
+
 gameRouter.post('/:id', async (ctx: Context) => {
   try {
     let game = await GameModel.findOne({ id: ctx.params.id }).exec()
