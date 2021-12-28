@@ -5,5 +5,5 @@ import { BoardContainer } from '@components/BoardContainer'
 export function Game() {
   const { id } = useParams() as { id: string }
 
-  return <BoardContainer />
+  return <BoardContainer gameId={id} />
 }

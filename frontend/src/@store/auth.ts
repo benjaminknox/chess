@@ -3,7 +3,6 @@ import { StoreonModule } from 'storeon'
 import { ConfigsResponse } from '@common'
 import { accessToken } from '@common/types'
 import { b } from '@api/common/bodyParamsParser'
-import { fetchMocking } from '@testUtils/fetchMocking'
 
 interface IdentityProps {
   scope: string
