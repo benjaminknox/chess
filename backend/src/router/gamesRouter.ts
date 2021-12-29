@@ -40,7 +40,7 @@ gameRouter.get('/:id', async (ctx: Context) => {
   }
 })
 
-gameRouter.post('/:id', async (ctx: Context) => {
+gameRouter.post('/:id/move', async (ctx: Context) => {
   try {
     let game = await GameModel.findOne({ id: ctx.params.id }).exec()
 

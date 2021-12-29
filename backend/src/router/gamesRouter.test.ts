@@ -67,6 +67,41 @@ describe('gamesRouter', () => {
 
       expect(response.body.id).toStrictEqual(id)
     })
+
+    describe('when player moves', () => {
+      it('adds a move to the collection', async () => {
+        const gameResponse = await request(server.callback()).post('/games').send({
+          white_player: player1,
+          black_player: player2,
+        })
+
+        const firstMove = 'first-move'
+
+        await request(server.callback())
+          .post(`/games/${gameResponse.body.id}/move`)
+          .send({
+            move: firstMove,
+          })
+
+        const secondMove = 'second-move'
+
+        await request(server.callback())
+          .post(`/games/${gameResponse.body.id}/move`)
+          .send({
+            move: secondMove,
+          })
+
+        const gameModels = await GameModel.find().exec()
+
+        expect(gameModels[0].moves.length).toBe(2)
+
+        expect(gameModels[0].moves[0].move).toBe(firstMove)
+        expect(gameModels[0].moves[0].move_number).toBe(1)
+
+        expect(gameModels[0].moves[1].move).toBe(secondMove)
+        expect(gameModels[0].moves[1].move_number).toBe(2)
+      })
+    })
   })
 
   describe("when game doesn't exist", () => {
@@ -74,37 +109,6 @@ describe('gamesRouter', () => {
       const response = await request(server.callback()).get(`/games/test-uuid-for-game`)
 
       expect(response.statusCode).toBe(404)
-    })
-  })
-
-  describe('when player moves', () => {
-    it('adds a move to the collection', async () => {
-      const gameResponse = await request(server.callback()).post('/games').send({
-        white_player: player1,
-        black_player: player2,
-      })
-
-      const firstMove = 'first-move'
-
-      await request(server.callback()).post(`/games/${gameResponse.body.id}`).send({
-        move: firstMove,
-      })
-
-      const secondMove = 'second-move'
-
-      await request(server.callback()).post(`/games/${gameResponse.body.id}`).send({
-        move: secondMove,
-      })
-
-      const gameModels = await GameModel.find().exec()
-
-      expect(gameModels[0].moves.length).toBe(2)
-
-      expect(gameModels[0].moves[0].move).toBe(firstMove)
-      expect(gameModels[0].moves[0].move_number).toBe(1)
-
-      expect(gameModels[0].moves[1].move).toBe(secondMove)
-      expect(gameModels[0].moves[1].move_number).toBe(2)
     })
   })
 })
