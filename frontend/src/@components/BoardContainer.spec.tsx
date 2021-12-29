@@ -40,16 +40,32 @@ describe('Board', () => {
   })
 
   describe('when loading board for the first time', () => {
+    // rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1
     beforeEach(() => {
-      fetchStub = mountWithFetchMocking(<TestBoardContainer />, {
-        path: `${basePath}/games/${game.id}`,
-        method: 'GET',
-        responseData: game,
-        headers: {
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${fakeIdentity.access_token}`,
+      const move = 'rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1'
+
+      fetchStub = mountWithFetchMocking(
+        <TestBoardContainer />,
+        {
+          path: `${basePath}/games/${game.id}`,
+          method: 'GET',
+          responseData: game,
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${fakeIdentity.access_token}`,
+          },
         },
-      })
+        {
+          path: `${basePath}/games/${game.id}/move`,
+          method: 'POST',
+          inputData: { move: move },
+          responseData: { ...game, moves: [{ move: move, id: 1 }] },
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${fakeIdentity.access_token}`,
+          },
+        }
+      )
     })
 
     it('should show board in start position', () => {
@@ -72,7 +88,12 @@ describe('Board', () => {
         })
       })
 
-      cy.get('div[data-square=g3] [draggable]').should('exist')
+      cy.get('div[data-square=g3] [draggable]')
+        .should('exist')
+        .then(() => {
+          //@ts-ignore
+          expect(fetchStub).to.be.calledTwice
+        })
     })
   })
 
@@ -95,6 +116,11 @@ describe('Board', () => {
           Authorization: `Bearer ${fakeIdentity.access_token}`,
         },
       })
+    })
+
+    it('should load the last turn taken', () => {
+      cy.get('[data-square] [draggable]').should('have.length', 30)
+      cy.get('div[data-square=e5] [draggable]').should('exist')
     })
 
     it('should load the last turn taken', () => {

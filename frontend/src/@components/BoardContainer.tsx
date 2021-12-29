@@ -16,7 +16,7 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
 
   useEffect(() => {
     if (configs.values) {
-      fetch(`${configs.values?.apiBasePath}/games/${gameId}`, {
+      fetch(`${configs.values.apiBasePath}/games/${gameId}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${Auth.identity.access_token}`,
@@ -26,16 +26,29 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
         .then(async response => response.json())
         .then(async (body: any) => {
           if (body.moves.length > 0) {
-            setChess(new Chess(body.moves[0].move))
+            setChess(new Chess(body.moves[body.moves.length - 1].move))
           }
         })
     }
-  }, [])
+  }, [configs.values])
 
   const move = (sourceSquare: string, targetSquare: string, piece: string) => {
     const move = chess.move({ from: sourceSquare, to: targetSquare })
 
-    setChess(new Chess(chess.fen()))
+    if (configs.values) {
+      fetch(`${configs.values.apiBasePath}/games/${gameId}/move`, {
+        method: 'POST',
+        body: b({
+          move: chess.fen(),
+        }),
+        headers: {
+          Authorization: `Bearer ${Auth.identity.access_token}`,
+          'Content-type': 'application/json',
+        },
+      })
+
+      setChess(new Chess(chess.fen()))
+    }
 
     return move
   }
