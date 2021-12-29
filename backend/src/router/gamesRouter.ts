@@ -1,12 +1,14 @@
 import { Context } from 'koa'
-import { GameModel, GameMoveModel } from 'entities'
+import { createClient } from 'redis'
 import { default as Router } from 'koa-router'
+import { publishMessage } from 'bootstrap/redis'
+import { GameModel, GameMoveModel } from 'entities'
 
-const gameRouter: Router = new Router({
-  prefix: '/games',
-})
+const config = { prefix: '/games' }
 
-gameRouter.post('/', async (ctx: Context) => {
+const gameRouter = { http: new Router(config), ws: new Router(config) }
+
+gameRouter.http.post('/', async (ctx: Context) => {
   try {
     const white_player = ctx.request.body.white_player
     const black_player = ctx.request.body.black_player
@@ -25,7 +27,7 @@ gameRouter.post('/', async (ctx: Context) => {
   }
 })
 
-gameRouter.get('/:id', async (ctx: Context) => {
+gameRouter.http.get('/:id', async (ctx: Context) => {
   try {
     const game = await GameModel.findOne({ id: ctx.params.id }).exec()
 
@@ -40,7 +42,7 @@ gameRouter.get('/:id', async (ctx: Context) => {
   }
 })
 
-gameRouter.post('/:id/move', async (ctx: Context) => {
+gameRouter.http.post('/:id/move', async (ctx: Context) => {
   try {
     let game = await GameModel.findOne({ id: ctx.params.id }).exec()
 
@@ -51,6 +53,8 @@ gameRouter.post('/:id/move', async (ctx: Context) => {
       gameMove.move_number = game.moves.length + 1
 
       game.moves.push(gameMove)
+
+      publishMessage('gameMove', gameMove.move)
 
       game = await game.save()
 

@@ -8,6 +8,7 @@ export interface IConfig {
   keycloakUri: string | undefined
   keycloakRealm: string | undefined
   oauthClientUrl: string | undefined
+  redisConnection: string | undefined
   mongodbConnection: string | undefined
   oauthClientSecret: string | undefined
   oauthValidationUrl: string | undefined
@@ -17,6 +18,7 @@ const defaultConfig: IConfig = {
   keycloakUri: process.env.KEYCLOAK_URI,
   keycloakRealm: process.env.KEYCLOAK_REALM,
   oauthClientUrl: process.env.OAUTH_CLIENT_URL,
+  redisConnection: process.env.REDIS_CONNECTION,
   mongodbConnection: process.env.MONGODB_CONNECTION,
   oauthClientSecret: process.env.OAUTH_CLIENT_SECRET,
   oauthValidationUrl: process.env.OAUTH_VALIDATION_URL,
@@ -29,6 +31,7 @@ export const testConfig: IConfig = {
   keycloakRealm: 'test-realm',
   mongodbConnection: 'test-uri',
   oauthClientId: 'test-client-id',
+  redisConnection: 'redis-test-uri',
   keycloakUri: 'http://keycloak-uri',
   oauthClientUrl: 'http://test-client',
   oauthClientSecret: 'test-client-secret',

@@ -9,6 +9,13 @@ services:
       - 27017:27017
     volumes:
       - chess-mongodb-data:/data/db
+  chess-redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - chess-redis-data:/data
 
 volumes:
   chess-mongodb-data:
+  chess-redis-data:

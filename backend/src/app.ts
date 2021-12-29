@@ -2,11 +2,11 @@ import cors from '@koa/cors'
 import { database } from 'bootstrap'
 import { default as Koa } from 'koa'
 import bodyParser from 'koa-bodyparser'
-import { validateToken, logUrl } from 'middlewares'
-import { jwtRouter, homeRouter, userRouter, gamesRouter } from 'router'
+import { validateToken, logUrl, websocket } from 'middlewares'
+import { jwtRouter, homeRouter, userRouter, gamesRouter, websocketRouter } from 'router'
 
 const app = () => {
-  const koa: Koa = new Koa()
+  const koa: Koa & { ws: any } = websocket(new Koa())
 
   database()
 
@@ -21,7 +21,9 @@ const app = () => {
   koa.use(homeRouter.routes())
   koa.use(userRouter.routes())
   koa.use(userRouter.routes())
-  koa.use(gamesRouter.routes())
+  koa.use(gamesRouter.http.routes())
+
+  koa.ws.use(websocketRouter.routes())
 
   return koa
 }

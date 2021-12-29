@@ -1,9 +1,9 @@
 import axios from 'axios'
 import request from 'supertest'
-import { getConfig } from 'config'
 import { GameModel } from 'entities'
 
 jest.mock('axios')
+jest.mock('bootstrap/redis')
 
 import app from 'app'
 

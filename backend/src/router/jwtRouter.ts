@@ -1,7 +1,7 @@
 import qs from 'qs'
 import axios from 'axios'
-import { getConfig } from 'config'
 import { Context } from 'koa'
+import { getConfig } from 'config'
 import { default as Router } from 'koa-router'
 
 const jwtRouter: Router = new Router({
