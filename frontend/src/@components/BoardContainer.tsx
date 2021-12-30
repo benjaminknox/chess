@@ -14,7 +14,7 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
   const configs = useConfigs()
   const { dispatch, Auth } = useStoreon('Auth')
   const [game, setGame] = useState<any>(undefined)
-  const [chess, setChess] = useState<typeof Chess>(new Chess())
+  const [board, setChess] = useState<typeof Chess>(new Chess())
   const [gameSocketUri, setGameSocketUri] = useState<string>('wss://echo.websocket.org')
   const { lastMessage } = useWebSocket(gameSocketUri)
 
@@ -50,13 +50,13 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
   const move = (sourceSquare: string, targetSquare: string, piece: string) => {
     if (!validMove(piece)) return false
 
-    const move = chess.move({ from: sourceSquare, to: targetSquare })
+    const move = board.move({ from: sourceSquare, to: targetSquare })
 
     if (configs.values) {
       fetch(`${configs.values.apiBasePath}/games/${gameId}/move`, {
         method: 'POST',
         body: b({
-          move: chess.fen(),
+          move: board.fen(),
         }),
         headers: {
           Authorization: `Bearer ${Auth.identity.access_token}`,
@@ -64,11 +64,11 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
         },
       })
 
-      setChess(new Chess(chess.fen()))
+      setChess(new Chess(board.fen()))
     }
 
     return move
   }
 
-  return <Board chess={chess} move={move} />
+  return <Board chess={board} move={move} />
 }

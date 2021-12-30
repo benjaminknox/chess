@@ -179,7 +179,7 @@ describe('Board', () => {
       cy.get('div[data-square=e5] [draggable]').should('exist')
     })
 
-    it.only('should move the board when the other player moves', () => {
+    it('should move the board when the other player moves', () => {
       mockServer.send('8/8/K7/8/6k1/8/8/8 w - - 0 1')
 
       cy.get('[data-square] [draggable]').should('have.length', 2)
