@@ -18,9 +18,9 @@ describe('gamesRouter', () => {
 
   beforeAll(() => {
     //@ts-ignore
-    axios.mockImplementation(() =>
+    axios.mockImplementation(request =>
       Promise.resolve({
-        data: {},
+        data: request.url === 'http://test-client/validate' ? { sub: 'player1' } : {},
       })
     )
   })
@@ -30,7 +30,7 @@ describe('gamesRouter', () => {
   })
 
   describe('when creating a game', () => {
-    it('creates games with correct players', async () => {
+    it('creates games with correct players and configuration', async () => {
       const player3 = 'player3'
       const player4 = 'player4'
 
@@ -46,11 +46,19 @@ describe('gamesRouter', () => {
 
       const gameModels = await GameModel.find().exec()
 
+      const firstMove = {
+        move: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        move_number: 1,
+      }
+
       expect(gameModels.length).toBe(2)
       expect(gameModels[0].white_player).toBe(player1)
       expect(gameModels[0].black_player).toBe(player2)
+      expect(gameModels[0].moves[0]).toMatchObject(firstMove)
+
       expect(gameModels[1].white_player).toBe(player3)
       expect(gameModels[1].black_player).toBe(player4)
+      expect(gameModels[1].moves[0]).toMatchObject(firstMove)
     })
   })
 
@@ -69,13 +77,15 @@ describe('gamesRouter', () => {
     })
 
     describe('when player moves', () => {
-      it('adds a move to the collection', async () => {
-        const gameResponse = await request(server.callback()).post('/games').send({
+      let gameResponse: any
+      const firstMove = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
+      const secondMove = 'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2'
+
+      beforeEach(async () => {
+        gameResponse = await request(server.callback()).post('/games').send({
           white_player: player1,
           black_player: player2,
         })
-
-        const firstMove = 'first-move'
 
         await request(server.callback())
           .post(`/games/${gameResponse.body.id}/move`)
@@ -83,23 +93,39 @@ describe('gamesRouter', () => {
             move: firstMove,
           })
 
-        const secondMove = 'second-move'
-
         await request(server.callback())
           .post(`/games/${gameResponse.body.id}/move`)
           .send({
             move: secondMove,
           })
+      })
 
-        const gameModels = await GameModel.find().exec()
+      describe('when the move is valid', () => {
+        it('adds a move to the collection', async () => {
+          const gameModels = await GameModel.find().exec()
 
-        expect(gameModels[0].moves.length).toBe(2)
+          expect(gameModels[0].moves.length).toBe(2)
 
-        expect(gameModels[0].moves[0].move).toBe(firstMove)
-        expect(gameModels[0].moves[0].move_number).toBe(1)
+          expect(gameModels[0].moves[1].move).toBe(firstMove)
+          expect(gameModels[0].moves[1].move_number).toBe(2)
+        })
+      })
 
-        expect(gameModels[0].moves[1].move).toBe(secondMove)
-        expect(gameModels[0].moves[1].move_number).toBe(2)
+      describe('when the move is invalid', () => {
+        const illegalMove =
+          'rnbqkbnr/pp2pppp/8/2pp4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e3 0 2'
+
+        describe('when the black moves but it is not the logged in user move', () => {
+          it('should not save the move', async () => {
+            const response = await request(server.callback())
+              .post(`/games/${gameResponse.body.id}/move`)
+              .send({
+                move: secondMove,
+              })
+
+            expect(response.statusCode).toBe(422)
+          })
+        })
       })
     })
   })

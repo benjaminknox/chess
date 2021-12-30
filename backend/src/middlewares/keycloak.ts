@@ -2,22 +2,25 @@ import axios from 'axios'
 import { getConfig } from 'config'
 import { Context, Next } from 'koa'
 
-function authRequired(ctx: Context): boolean {
-  return ctx.url !== '/' && !ctx.url.startsWith('/api/jwt')
+function authRequired(context: Context): boolean {
+  return context.url !== '/' && !context.url.startsWith('/api/jwt')
 }
 
-const validateToken = async (ctx: Context, next: Next) => {
-  if (authRequired(ctx)) {
+const validateToken = async (context: Context, next: Next) => {
+  if (authRequired(context)) {
     await axios({
       url: getConfig().oauthValidationUrl,
       method: 'POST',
       headers: {
-        authorization: ctx.request.header.authorization ?? '',
+        authorization: context.request.header.authorization ?? '',
       },
     })
-      .then((response: any) => next())
+      .then((response: any) => {
+        context.user = response.data
+        return next()
+      })
       .catch((error: any) => {
-        ctx.status = 401
+        context.status = 401
       })
   } else {
     await next()

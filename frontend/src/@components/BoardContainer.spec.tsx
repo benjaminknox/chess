@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { BoardContainer } from './BoardContainer'
 import { mountWithFetchMocking } from '@testUtils'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
+import { decodedFakeAccessToken } from '@testUtils/fakeAccessToken'
 import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
 
 describe('Board', () => {
@@ -27,7 +28,7 @@ describe('Board', () => {
 
     game = {
       _id: '_test-record-id',
-      white_player: 'white-player-id',
+      white_player: decodedFakeAccessToken.sub,
       black_player: 'black-player-id',
       moves: [],
       id: 'test-game-id',
@@ -40,9 +41,9 @@ describe('Board', () => {
   })
 
   describe('when loading board for the first time', () => {
-    // rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1
     beforeEach(() => {
-      const move = 'rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1'
+      const testMove1 = 'rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1'
+      const testMove2 = 'rnbqkbnr/pppp1ppp/4p3/8/8/6P1/PPPPPP1P/RNBQKBNR w KQkq - 0 2'
 
       fetchStub = mountWithFetchMocking(
         <TestBoardContainer />,
@@ -58,8 +59,18 @@ describe('Board', () => {
         {
           path: `${basePath}/games/${game.id}/move`,
           method: 'POST',
-          inputData: { move: move },
-          responseData: { ...game, moves: [{ move: move, id: 1 }] },
+          inputData: { move: testMove1 },
+          responseData: { ...game, moves: [{ move: testMove1, id: 2 }] },
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${fakeIdentity.access_token}`,
+          },
+        },
+        {
+          path: `${basePath}/games/${game.id}/move`,
+          method: 'POST',
+          inputData: { move: testMove2 },
+          responseData: { ...game, moves: [{ move: testMove2, id: 2 }] },
           headers: {
             'Content-type': 'application/json',
             Authorization: `Bearer ${fakeIdentity.access_token}`,
@@ -74,26 +85,58 @@ describe('Board', () => {
       expect(fetchStub).to.be.calledOnce
     })
 
-    it('should update the board after move', () => {
-      cy.get('[data-square] [draggable]').should('have.length', 32)
+    describe('when the move is invalid', () => {
+      it('should not allow the board when black player moves white', () => {
+        cy.get('[data-square] [draggable]').should('have.length', 32)
 
-      cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
-        cy.get('[data-square=g3]').then($droppable => {
-          const dataTransfer = { dataTransfer: new DataTransfer() }
+        cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
+          cy.get('[data-square=g3]').then($droppable => {
+            const dataTransfer = { dataTransfer: new DataTransfer() }
 
-          cy.wrap($draggable).trigger('dragstart', dataTransfer)
-          cy.wrap($droppable)
-            .trigger('drop', dataTransfer)
-            .trigger('mouseup', { force: true })
+            cy.wrap($draggable).trigger('dragstart', dataTransfer)
+            cy.wrap($droppable)
+              .trigger('drop', dataTransfer)
+              .trigger('mouseup', { force: true })
+          })
         })
+
+        cy.get('[data-square=e7] div[draggable=true]').then($draggable => {
+          cy.get('[data-square=e6]').then($droppable => {
+            const dataTransfer = { dataTransfer: new DataTransfer() }
+
+            cy.wrap($draggable).trigger('dragstart', dataTransfer)
+            cy.wrap($droppable)
+              .trigger('drop', dataTransfer)
+              .trigger('mouseup', { force: true })
+          })
+        })
+
+        cy.get('div[data-square=e6] [draggable]').should('not.exist')
       })
+    })
 
-      cy.get('div[data-square=g3] [draggable]')
-        .should('exist')
-        .then(() => {
-          //@ts-ignore
-          expect(fetchStub).to.be.calledTwice
+    describe('when the move is valid', () => {
+      it('should update the board after move', () => {
+        cy.get('[data-square] [draggable]').should('have.length', 32)
+
+        cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
+          cy.get('[data-square=g3]').then($droppable => {
+            const dataTransfer = { dataTransfer: new DataTransfer() }
+
+            cy.wrap($draggable).trigger('dragstart', dataTransfer)
+            cy.wrap($droppable)
+              .trigger('drop', dataTransfer)
+              .trigger('mouseup', { force: true })
+          })
         })
+
+        cy.get('div[data-square=g3] [draggable]')
+          .should('exist')
+          .then(() => {
+            //@ts-ignore
+            expect(fetchStub).to.be.calledTwice
+          })
+      })
     })
   })
 

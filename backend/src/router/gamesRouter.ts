@@ -1,3 +1,4 @@
+import { Chess } from 'chess.js'
 import { Context } from 'koa'
 import { createClient } from 'redis'
 import { default as Router } from 'koa-router'
@@ -13,10 +14,15 @@ gameRouter.http.post('/', async (ctx: Context) => {
     const white_player = ctx.request.body.white_player
     const black_player = ctx.request.body.black_player
 
+    const firstMove = new GameMoveModel()
+
+    firstMove.move = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+    firstMove.move_number = 1
+
     const game = await GameModel.create({
       white_player,
       black_player,
-      moves: [],
+      moves: [firstMove],
     })
 
     ctx.body = await GameModel.findOne({ id: game.id }).exec()
@@ -45,22 +51,30 @@ gameRouter.http.get('/:id', async (ctx: Context) => {
 gameRouter.http.post('/:id/move', async (ctx: Context) => {
   try {
     let game = await GameModel.findOne({ id: ctx.params.id }).exec()
-
     if (game) {
-      const gameMove = new GameMoveModel()
+      const turn =
+        new Chess(game.moves[game.moves.length - 1].move).turn() === 'b'
+          ? 'black_player'
+          : 'white_player'
 
-      gameMove.move = ctx.request.body.move
-      gameMove.move_number = game.moves.length + 1
+      if (ctx.user.sub !== game[turn]) {
+        ctx.status = 422
+      } else {
+        const gameMove = new GameMoveModel()
 
-      game.moves.push(gameMove)
+        gameMove.move = ctx.request.body.move
+        gameMove.move_number = game.moves.length + 1
 
-      publishMessage('gameMove', gameMove.move)
+        game.moves.push(gameMove)
 
-      game = await game.save()
+        publishMessage('gameMove', gameMove.move)
 
-      ctx.body = game
+        game = await game.save()
 
-      ctx.status = 200
+        ctx.body = game
+
+        ctx.status = 200
+      }
     } else {
       ctx.status = 404
     }

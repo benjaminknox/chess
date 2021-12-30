@@ -1,21 +1,22 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "strict": true,
-    "baseUrl": "./src",
     "target": "es6",
-    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "strictPropertyInitialization": false,
+    "baseUrl": "./src",
     "module": "commonjs",
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["dom", "dom.iterable", "esnext"]
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"]
