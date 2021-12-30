@@ -3,7 +3,7 @@ import { database } from 'bootstrap'
 import { default as Koa } from 'koa'
 import bodyParser from 'koa-bodyparser'
 import { validateToken, logUrl, websocket } from 'middlewares'
-import { jwtRouter, homeRouter, userRouter, gamesRouter, websocketRouter } from 'router'
+import { jwtRouter, homeRouter, userRouter, gamesRouter } from 'router'
 
 const app = () => {
   const koa: Koa & { ws: any } = websocket(new Koa())
@@ -23,7 +23,7 @@ const app = () => {
   koa.use(userRouter.routes())
   koa.use(gamesRouter.http.routes())
 
-  koa.ws.use(websocketRouter.routes())
+  koa.ws.use(gamesRouter.ws.routes())
 
   return koa
 }

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import createStore from '@store'
 import { mount } from '@cypress/react'
+import { Server } from 'mock-websocket'
 import { StoreContext } from 'storeon/react'
 import { SinonStub } from 'cypress/types/sinon'
 import { BrowserRouter } from 'react-router-dom'
@@ -13,6 +14,7 @@ import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
 describe('Board', () => {
   let store: any
   const basePath = 'https://test-id'
+  let websocketBasePath: string
   let fetchStub: Cypress.Agent<SinonStub>
   let game: {
     _id: string
@@ -22,6 +24,8 @@ describe('Board', () => {
     id: string
     __v: number
   }
+
+  let mockServer: Server
 
   beforeEach(() => {
     cy.viewport(800, 800)
@@ -34,6 +38,10 @@ describe('Board', () => {
       id: 'test-game-id',
       __v: 0,
     }
+
+    websocketBasePath = `ws://test-url`
+
+    mockServer = new Server(`${websocketBasePath}/games/${game.id}`)
 
     store = createStore()
 
@@ -170,11 +178,20 @@ describe('Board', () => {
       cy.get('[data-square] [draggable]').should('have.length', 30)
       cy.get('div[data-square=e5] [draggable]').should('exist')
     })
+
+    it.only('should move the board when the other player moves', () => {
+      mockServer.send('8/8/K7/8/6k1/8/8/8 w - - 0 1')
+
+      cy.get('[data-square] [draggable]').should('have.length', 2)
+    })
   })
 
   function TestBoardContainer(config: Partial<ConfigsResponse>) {
     const defaultConfig: ConfigsResponse = {
-      values: { apiBasePath: basePath },
+      values: {
+        apiBasePath: basePath,
+        websocketBasePath,
+      },
       loading: false,
       failed: false,
     }

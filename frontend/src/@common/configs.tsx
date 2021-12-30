@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 
 interface Configs {
   apiBasePath: string
+  websocketBasePath: string
 }
 
 export interface ConfigsResponse {
@@ -50,6 +51,7 @@ function useConfigsResponse(): ConfigsResponse {
   useEffect(() => {
     setConfigs({
       apiBasePath: process.env.REACT_APP_API_BASE_PATH ?? '',
+      websocketBasePath: process.env.REACT_APP_WEBSOCKET_BASE_PATH ?? '',
     })
   }, [])
 

@@ -1,18 +1,18 @@
-import { Chess } from 'chess.js'
 import { Context } from 'koa'
+import { Chess } from 'chess.js'
 import { createClient } from 'redis'
 import { default as Router } from 'koa-router'
-import { publishMessage } from 'bootstrap/redis'
 import { GameModel, GameMoveModel } from 'entities'
+import { publishMessage, subscribe } from 'bootstrap/redis'
 
 const config = { prefix: '/games' }
 
 const gameRouter = { http: new Router(config), ws: new Router(config) }
 
-gameRouter.http.post('/', async (ctx: Context) => {
+gameRouter.http.post('/', async (context: Context) => {
   try {
-    const white_player = ctx.request.body.white_player
-    const black_player = ctx.request.body.black_player
+    const white_player = context.request.body.white_player
+    const black_player = context.request.body.black_player
 
     const firstMove = new GameMoveModel()
 
@@ -25,44 +25,44 @@ gameRouter.http.post('/', async (ctx: Context) => {
       moves: [firstMove],
     })
 
-    ctx.body = await GameModel.findOne({ id: game.id }).exec()
+    context.body = await GameModel.findOne({ id: game.id }).exec()
 
-    ctx.status = 200
+    context.status = 200
   } catch (ex) {
     throw ex
   }
 })
 
-gameRouter.http.get('/:id', async (ctx: Context) => {
+gameRouter.http.get('/:id', async (context: Context) => {
   try {
-    const game = await GameModel.findOne({ id: ctx.params.id }).exec()
+    const game = await GameModel.findOne({ id: context.params.id }).exec()
 
     if (game) {
-      ctx.body = game
-      ctx.status = 200
+      context.body = game
+      context.status = 200
     } else {
-      ctx.status = 404
+      context.status = 404
     }
   } catch (ex) {
     throw ex
   }
 })
 
-gameRouter.http.post('/:id/move', async (ctx: Context) => {
+gameRouter.http.post('/:id/move', async (context: Context) => {
   try {
-    let game = await GameModel.findOne({ id: ctx.params.id }).exec()
+    let game = await GameModel.findOne({ id: context.params.id }).exec()
     if (game) {
       const turn =
         new Chess(game.moves[game.moves.length - 1].move).turn() === 'b'
           ? 'black_player'
           : 'white_player'
 
-      if (ctx.user.sub !== game[turn]) {
-        ctx.status = 422
+      if (context.user.sub !== game[turn]) {
+        context.status = 422
       } else {
         const gameMove = new GameMoveModel()
 
-        gameMove.move = ctx.request.body.move
+        gameMove.move = context.request.body.move
         gameMove.move_number = game.moves.length + 1
 
         game.moves.push(gameMove)
@@ -71,16 +71,20 @@ gameRouter.http.post('/:id/move', async (ctx: Context) => {
 
         game = await game.save()
 
-        ctx.body = game
+        context.body = game
 
-        ctx.status = 200
+        context.status = 200
       }
     } else {
-      ctx.status = 404
+      context.status = 404
     }
   } catch (ex) {
     throw ex
   }
+})
+
+gameRouter.ws.get('/:id', async (context: Context) => {
+  subscribe('gameMove', context)
 })
 
 export default gameRouter
