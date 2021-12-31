@@ -42,7 +42,7 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
 
       setGameSocketUri(`${configs.values.websocketBasePath}/games/${gameId}`)
     }
-  }, [configs.values])
+  }, [configs.values, Auth.identity.access_token])
 
   const validMove = (piece: string) =>
     game[piece[0] === 'b' ? 'black_player' : 'white_player'] ===

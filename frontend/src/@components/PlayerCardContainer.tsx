@@ -30,7 +30,7 @@ export function PlayerCardContainer({ userId, align }: PlayerCardContainerProps)
           setName(data.username)
         })
     }
-  }, [configs.values])
+  }, [configs.values, Auth.identity.access_token])
 
   return <PlayerCard me={me} name={name} align={align} />
 }
