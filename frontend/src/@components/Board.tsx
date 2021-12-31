@@ -7,6 +7,8 @@ import { Chessboard } from 'react-chessboard'
 export interface BoardProps {
   chess: typeof Chess
   move: (sourceSquare: string, targetSquare: string, piece: string) => boolean
+  blackPlayer: React.ReactNode
+  whitePlayer: React.ReactNode
 }
 
 const useStyles = makeStyles({
@@ -17,7 +19,7 @@ const useStyles = makeStyles({
   },
 })
 
-export function Board({ chess, move }: BoardProps) {
+export function Board({ chess, move, blackPlayer, whitePlayer }: BoardProps) {
   const classes = useStyles()
 
   return (
@@ -25,7 +27,11 @@ export function Board({ chess, move }: BoardProps) {
       <div className={classes.turnIndicator}>
         <MoveInfo board={chess} />
       </div>
-      <Chessboard position={chess.fen()} onPieceDrop={move} />
+      <div>
+        {blackPlayer}
+        <Chessboard position={chess.fen()} onPieceDrop={move} />
+        {whitePlayer}
+      </div>
     </>
   )
 }

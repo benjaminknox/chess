@@ -1,6 +1,7 @@
 import Chess from 'chess.js'
 import * as React from 'react'
 import { mount } from '@cypress/react'
+import { PlayerCard } from './PlayerCard'
 import { Board, BoardProps } from './Board'
 
 describe('Board', () => {
@@ -52,6 +53,8 @@ describe('Board', () => {
     const defaultProps = {
       chess: new Chess(),
       move: cy.stub(),
+      blackPlayer: <PlayerCard name='test-player-black' align='right' />,
+      whitePlayer: <PlayerCard name='test-player-white' />,
       ...props,
     }
 

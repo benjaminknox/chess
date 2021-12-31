@@ -70,6 +70,8 @@ describe('userRouter', () => {
       },
     ]
 
+    const userGetUrl = `${config.keycloakUri}/auth/admin/realms/${config.keycloakRealm}/users/${userListResponse[0].id}`
+
     beforeEach(() => {
       //@ts-ignore
       axios.mockImplementation(routes => {
@@ -77,6 +79,11 @@ describe('userRouter', () => {
           return Promise.resolve({
             status: 200,
             data: userListResponse,
+          })
+        } else if (routes.url === userGetUrl) {
+          return Promise.resolve({
+            status: 200,
+            data: userListResponse[0],
           })
         } else if (routes.url === keyCloakServiceTokenUrl) {
           return Promise.resolve({
@@ -111,6 +118,15 @@ describe('userRouter', () => {
           }),
         })
       )
+    })
+
+    it('should get the user from the id', async () => {
+      const response = await request(app().callback())
+        .get(`/users/${userListResponse[0].id}`)
+        .send()
+
+      expect(response.status).toBe(200)
+      expect(response.body).toStrictEqual(userListResponse[0])
     })
   })
 })

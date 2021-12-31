@@ -1,17 +1,15 @@
 import qs from 'qs'
 import axios from 'axios'
 import { Context } from 'koa'
-import { getConfig } from 'config'
+import { getConfig, IConfig } from 'config'
 import { default as Router } from 'koa-router'
 
 const userRouter: Router = new Router({
   prefix: '/users',
 })
 
-userRouter.get('/', async (ctx: Context) => {
-  const config = getConfig()
-
-  const admin: any = await axios({
+const getKeycloakAdminAccess = async (config: IConfig) =>
+  await axios({
     url: `${config.keycloakUri}/auth/realms/${config.keycloakRealm}/protocol/openid-connect/token`,
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
@@ -22,13 +20,33 @@ userRouter.get('/', async (ctx: Context) => {
     }),
   })
 
+userRouter.get('/', async (context: Context) => {
+  const config = getConfig()
+
+  const admin: any = await getKeycloakAdminAccess(config)
+
   await axios({
     url: `${config.keycloakUri}/auth/admin/realms/${config.keycloakRealm}/users`,
     method: 'GET',
     headers: { authorization: `${admin.data.token_type} ${admin.data.access_token}` },
   }).then((response: any) => {
-    ctx.body = response.data
-    ctx.status = 200
+    context.body = response.data
+    context.status = 200
+  })
+})
+
+userRouter.get('/:id', async (context: Context) => {
+  const config = getConfig()
+
+  const admin: any = await getKeycloakAdminAccess(config)
+
+  await axios({
+    url: `${config.keycloakUri}/auth/admin/realms/${config.keycloakRealm}/users/${context.params.id}`,
+    method: 'GET',
+    headers: { authorization: `${admin.data.token_type} ${admin.data.access_token}` },
+  }).then((response: any) => {
+    context.body = response.data
+    context.status = 200
   })
 })
 

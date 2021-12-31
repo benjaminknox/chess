@@ -6,38 +6,67 @@ import { StoreContext } from 'storeon/react'
 import { SinonStub } from 'cypress/types/sinon'
 import { BrowserRouter } from 'react-router-dom'
 import { BoardContainer } from './BoardContainer'
-import { mountWithFetchMocking } from '@testUtils'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
 import { decodedFakeAccessToken } from '@testUtils/fakeAccessToken'
 import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
+import { mountWithFetchMocking, generateRandomUser } from '@testUtils'
 
 describe('Board', () => {
   let store: any
   const basePath = 'https://test-id'
   let websocketBasePath: string
   let fetchStub: Cypress.Agent<SinonStub>
-  let game: {
+  const game: {
     _id: string
     white_player: string
     black_player: string
     moves: { move: string; move_number: number }[]
     id: string
     __v: number
+  } = {
+    _id: '_test-record-id',
+    white_player: decodedFakeAccessToken.sub,
+    black_player: 'black-player-id',
+    moves: [],
+    id: 'test-game-id',
+    __v: 0,
   }
+
+  const whitePlayer = {
+    ...generateRandomUser(),
+    id: game.white_player,
+  }
+
+  const blackPlayer = {
+    ...generateRandomUser(),
+    id: game.black_player,
+  }
+
+  const userFechMocks = [
+    {
+      path: `${basePath}/users/${whitePlayer.id}`,
+      method: 'GET',
+      responseData: whitePlayer,
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${fakeIdentity.access_token}`,
+      },
+    },
+    {
+      path: `${basePath}/users/${blackPlayer.id}`,
+      method: 'GET',
+      responseData: blackPlayer,
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${fakeIdentity.access_token}`,
+      },
+    },
+  ]
 
   let mockServer: Server
 
   beforeEach(() => {
     cy.viewport(800, 800)
-
-    game = {
-      _id: '_test-record-id',
-      white_player: decodedFakeAccessToken.sub,
-      black_player: 'black-player-id',
-      moves: [],
-      id: 'test-game-id',
-      __v: 0,
-    }
 
     websocketBasePath = `ws://test-url`
 
@@ -83,14 +112,15 @@ describe('Board', () => {
             'Content-type': 'application/json',
             Authorization: `Bearer ${fakeIdentity.access_token}`,
           },
-        }
+        },
+        ...userFechMocks
       )
     })
 
     it('should show board in start position', () => {
       cy.get('[data-square] [draggable]').should('have.length', 32)
       //@ts-ignore
-      expect(fetchStub).to.be.calledOnce
+      expect(fetchStub).to.be.calledThrice
     })
 
     describe('when the move is invalid', () => {
@@ -142,7 +172,7 @@ describe('Board', () => {
           .should('exist')
           .then(() => {
             //@ts-ignore
-            expect(fetchStub).to.be.calledTwice
+            expect(fetchStub).to.have.callCount(4)
           })
       })
     })
@@ -150,23 +180,27 @@ describe('Board', () => {
 
   describe('when loading an existing board', () => {
     beforeEach(() => {
-      fetchStub = mountWithFetchMocking(<TestBoardContainer />, {
-        path: `${basePath}/games/${game.id}`,
-        method: 'GET',
-        responseData: {
-          ...game,
-          moves: [
-            {
-              move: 'rnbqkbnr/pp3ppp/8/3pp3/8/5P2/PPPPK1PP/RNBQ1BNR w kq - 0 5',
-              move_number: 3,
-            },
-          ],
+      fetchStub = mountWithFetchMocking(
+        <TestBoardContainer />,
+        {
+          path: `${basePath}/games/${game.id}`,
+          method: 'GET',
+          responseData: {
+            ...game,
+            moves: [
+              {
+                move: 'rnbqkbnr/pp3ppp/8/3pp3/8/5P2/PPPPK1PP/RNBQ1BNR w kq - 0 5',
+                move_number: 3,
+              },
+            ],
+          },
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${fakeIdentity.access_token}`,
+          },
         },
-        headers: {
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${fakeIdentity.access_token}`,
-        },
-      })
+        ...userFechMocks
+      )
     })
 
     it('should load the last turn taken', () => {
@@ -183,6 +217,11 @@ describe('Board', () => {
       mockServer.send('8/8/K7/8/6k1/8/8/8 w - - 0 1')
 
       cy.get('[data-square] [draggable]').should('have.length', 2)
+    })
+
+    it('should show the user avatars', () => {
+      cy.get('[data-cy=avatar-left]').contains(blackPlayer.username)
+      cy.get('[data-cy=avatar-right]').contains('me')
     })
   })
 

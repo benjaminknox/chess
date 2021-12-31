@@ -1,9 +1,9 @@
 import Chess from 'chess.js'
-import { Board } from './Board'
 import { useConfigs } from '@common'
 import { useStoreon } from 'storeon/react'
 import { b } from '@api/common/bodyParamsParser'
 import React, { useState, useEffect } from 'react'
+import { PlayerCardContainer, Board } from '@components'
 import useWebSocket, { ReadyState } from 'react-use-websocket'
 
 export interface BoardContainerProps {
@@ -15,6 +15,7 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
   const { dispatch, Auth } = useStoreon('Auth')
   const [game, setGame] = useState<any>(undefined)
   const [board, setChess] = useState<typeof Chess>(new Chess())
+
   const [gameSocketUri, setGameSocketUri] = useState<string>('wss://echo.websocket.org')
   const { lastMessage } = useWebSocket(gameSocketUri)
 
@@ -70,5 +71,16 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
     return move
   }
 
-  return <Board chess={board} move={move} />
+  return (
+    <Board
+      whitePlayer={
+        game && <PlayerCardContainer userId={game.white_player} align='right' />
+      }
+      blackPlayer={
+        game && <PlayerCardContainer userId={game.black_player} align='left' />
+      }
+      chess={board}
+      move={move}
+    />
+  )
 }

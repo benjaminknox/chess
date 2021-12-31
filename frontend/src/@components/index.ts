@@ -1,4 +1,6 @@
 export * from './Space'
+export * from './Board'
 export * from './MoveInfo'
 export * from './SelectUser'
 export * from './SelectUserContainer'
+export * from './PlayerCardContainer'
