@@ -1,19 +1,14 @@
 import { Space } from '@components'
 import React, { useState } from 'react'
-import { makeStyles } from '@mui/styles'
 import { LoadingButton } from '@mui/lab'
 import { Alert, Grid, Paper, TextField, Typography } from '@mui/material'
 
-const useStyles = makeStyles({
+const classes = {
   loginWrapper: {
-    textAlign: 'center',
     padding: '10px',
     maxWidth: '300px',
   },
-  space: {
-    marginBottom: '40px',
-  },
-})
+}
 
 export interface LoginFormProps {
   loading?: boolean
@@ -30,8 +25,6 @@ export function LoginForm({
   submitFailed,
   passwordFailed,
 }: LoginFormProps) {
-  const classes = useStyles()
-
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
 
@@ -57,7 +50,8 @@ export function LoginForm({
       <Grid
         container
         direction='column'
-        className={classes.loginWrapper}
+        alignItems='center'
+        sx={classes.loginWrapper}
         data-cy='login-form-wrapper'
         component={Paper}
         spacing={1}

@@ -1,4 +1,5 @@
 import { useConfigs } from '@common'
+import { Grid } from '@mui/material'
 import { LoginForm } from '@pages/auth'
 import React, { useState } from 'react'
 import { useStoreon } from 'storeon/react'
@@ -41,6 +42,14 @@ export function LoginFormContainer() {
   return Auth.isAuthenticated ? (
     <Redirect to={'/'} />
   ) : (
-    <LoginForm onSubmit={onSubmit} loading={loading} submitFailed={submitFailed} />
+    <Grid
+      display='flex'
+      direction='column'
+      height='100%'
+      alignItems='center'
+      justifyContent='center'
+    >
+      <LoginForm onSubmit={onSubmit} loading={loading} submitFailed={submitFailed} />
+    </Grid>
   )
 }

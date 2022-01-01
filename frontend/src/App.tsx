@@ -11,12 +11,7 @@ export function App() {
   const { dispatch, Auth } = useStoreon('Auth')
 
   return (
-    <Grid
-      justifyContent='center'
-      display='flex'
-      alignItems='center'
-      style={{ height: '100%' }}
-    >
+    <>
       <ProtectedRoute exact path={'/'} component={Home} />
       <ProtectedRoute
         exact
@@ -34,6 +29,6 @@ export function App() {
         }}
       />
       <Route exact path={'/login'} component={LoginFormContainer} />
-    </Grid>
+    </>
   )
 }

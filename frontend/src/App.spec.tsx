@@ -58,6 +58,10 @@ describe('App', () => {
         mount(<TestApp />)
       })
 
+      it('should show the menu icon', () => {
+        cy.get('[data-cy=menu-button]')
+      })
+
       it('redirects login to home page', () => {
         cy.get('[data-cy=home]').then(() => {
           // @ts-ignore

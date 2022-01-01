@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Layout } from '@common'
 import { useConfigs } from '@common'
 import { useStoreon } from 'storeon/react'
 import { Redirect, Route } from 'react-router-dom'
@@ -23,7 +24,13 @@ export function ProtectedRoute({ component: Component, ...restOfProps }: any) {
     <Route
       {...restOfProps}
       render={props =>
-        Auth.isAuthenticated ? <Component {...props} /> : <Redirect to='/login' />
+        Auth.isAuthenticated ? (
+          <Layout>
+            <Component {...props} />
+          </Layout>
+        ) : (
+          <Redirect to='/login' />
+        )
       }
     />
   )

@@ -2,14 +2,13 @@ import Color from 'color'
 import * as React from 'react'
 import { Space } from '@components'
 import { side } from '@common/types'
-import { makeStyles } from '@mui/styles'
 import { Grid, Fab } from '@mui/material'
 import { useStoreon } from 'storeon/react'
 import { b } from '@api/common/bodyParamsParser'
 import { colorScheme, useConfigs } from '@common'
 import { useParams, useHistory } from 'react-router-dom'
 
-const useStyles = makeStyles({
+const classes = {
   button: {
     width: '168px',
     fontWeight: 'bold',
@@ -28,10 +27,9 @@ const useStyles = makeStyles({
       background: '#EFEFEF',
     },
   },
-})
+}
 
 export function SelectSide() {
-  const classes = useStyles()
   const configs = useConfigs()
   const history = useHistory()
   const { dispatch, Auth } = useStoreon('Auth')
@@ -65,7 +63,7 @@ export function SelectSide() {
           variant='extended'
           data-cy='black-player'
           onClick={() => startGame(side.black)}
-          className={`${classes.button} ${classes.blackButton}`}
+          sx={{ ...classes.button, ...classes.blackButton }}
         >
           Play as Black
         </Fab>
@@ -76,7 +74,7 @@ export function SelectSide() {
           variant='extended'
           data-cy='white-player'
           onClick={() => startGame(side.white)}
-          className={`${classes.button} ${classes.whiteButton}`}
+          sx={{ ...classes.button, ...classes.whiteButton }}
         >
           Play as White
         </Fab>

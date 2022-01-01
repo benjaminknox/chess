@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Align } from '@types'
 import { stringToColor } from '@common'
-import { makeStyles } from '@mui/styles'
 import { Box, Avatar } from '@mui/material'
 
 export interface PlayerCardProps {
@@ -11,18 +10,12 @@ export interface PlayerCardProps {
   align: Align
 }
 
-const useStyles = makeStyles({
+const classes = {
   wrapper: {
     display: 'flex',
     alignItems: 'center',
     marginTop: '20px',
     marginBottom: '20px',
-  },
-  ['wrapper-align-left']: {
-    flexDirection: 'row',
-  },
-  ['wrapper-align-right']: {
-    flexDirection: 'row-reverse',
   },
   avatar: {
     border: '2px solid rgba(34, 56, 67, 0.5)',
@@ -33,21 +26,23 @@ const useStyles = makeStyles({
   ['avatar-align-right']: {
     marginLeft: '8px',
   },
-})
+}
 
 export function PlayerCard({ me, name, avatarUrl, align }: PlayerCardProps) {
-  const classes = useStyles()
-
   align = align || 'left'
 
   return (
     <Box
       data-cy={`avatar-${align}`}
-      className={`${classes.wrapper} ${classes[`wrapper-align-${align}`]}`}
+      sx={{ ...classes.wrapper }}
+      flexDirection={align === 'left' ? 'row' : 'row-reverse'}
     >
       <Avatar
-        className={`${classes.avatar} ${classes[`avatar-align-${align}`]}`}
-        sx={{ bgcolor: stringToColor(name) }}
+        sx={{
+          ...classes.avatar,
+          ...classes[`avatar-align-${align}`],
+          bgcolor: stringToColor(name),
+        }}
       >
         {name && name[0].toUpperCase()}
       </Avatar>

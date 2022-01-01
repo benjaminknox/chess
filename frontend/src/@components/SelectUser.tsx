@@ -1,6 +1,5 @@
 import { User } from '@types'
 import React, { useState } from 'react'
-import { makeStyles } from '@mui/styles'
 import {
   Select,
   MenuItem,
@@ -9,20 +8,19 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 
-const useStyles = makeStyles({
+const classes = {
   userSelect: {
     background: '#FFF',
+    minWidth: '446px',
   },
-})
+}
 
 export interface SelectUserProps {
-  className?: string
   userList: Partial<User>[]
   updateUser: (user: Partial<User>) => void
 }
 
-export function SelectUser({ userList, updateUser, className }: SelectUserProps) {
-  const classes = useStyles()
+export function SelectUser({ userList, updateUser }: SelectUserProps) {
   const [userId, setUserId] = useState<string>('')
 
   const onSelect = (evt: SelectChangeEvent<string>) => {
@@ -37,7 +35,7 @@ export function SelectUser({ userList, updateUser, className }: SelectUserProps)
       <Select
         value={userId}
         onChange={onSelect}
-        className={`${className} ${classes.userSelect}`}
+        sx={classes.userSelect}
         label='Select Opponent'
         labelId='user-list-label'
         data-cy='user-list-select'

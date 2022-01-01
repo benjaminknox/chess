@@ -3,9 +3,8 @@ import Chess from 'chess.js'
 import * as React from 'react'
 import { Fab } from '@mui/material'
 import { colorScheme } from '@common'
-import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles({
+const classes = {
   button: {
     '&, &:hover': {
       cursor: 'default',
@@ -25,22 +24,20 @@ const useStyles = makeStyles({
       color: colorScheme.darkest,
     },
   },
-})
+}
 
 export interface MoveInfoProps {
   board: typeof Chess
 }
 
 export function MoveInfo({ board }: MoveInfoProps) {
-  const classes = useStyles()
-
   const button =
     board.turn() === 'w' ? (
       <Fab
         component='div'
         variant='extended'
         data-cy='white-move'
-        className={`${classes.button} ${classes.whiteButton}`}
+        sx={{ ...classes.button, ...classes.whiteButton }}
       >
         {"White's Turn"}
       </Fab>
@@ -49,7 +46,7 @@ export function MoveInfo({ board }: MoveInfoProps) {
         component='div'
         variant='extended'
         data-cy='black-move'
-        className={`${classes.button} ${classes.blackButton}`}
+        sx={{ ...classes.button, ...classes.blackButton }}
       >
         {"Black's Turn"}
       </Fab>

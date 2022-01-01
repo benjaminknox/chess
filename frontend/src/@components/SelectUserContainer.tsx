@@ -1,14 +1,13 @@
 import { User } from '@types'
 import { Space } from '@components'
 import { useConfigs } from '@common'
-import { makeStyles } from '@mui/styles'
 import { SelectUser } from '@components'
 import { Grid, Fab } from '@mui/material'
 import { useStoreon } from 'storeon/react'
 import ForwardIcon from '@mui/icons-material/Forward'
 import React, { useState, useEffect } from 'react'
 
-const useStyles = makeStyles({
+const classes = {
   center: {
     textAlign: 'center',
   },
@@ -18,14 +17,13 @@ const useStyles = makeStyles({
   fabForwardIcon: {
     opacity: 0.8,
   },
-})
+}
 
 export interface SelectUserContainerProps {
   selectOpponent: (user: User) => void
 }
 
 export function SelectUserContainer({ selectOpponent }: SelectUserContainerProps) {
-  const classes = useStyles()
   const configs = useConfigs()
   const { dispatch, Users } = useStoreon('Users')
   const [userList, setUserList] = useState<Partial<User>[]>([])
@@ -50,23 +48,19 @@ export function SelectUserContainer({ selectOpponent }: SelectUserContainerProps
   }
 
   return (
-    <Grid>
+    <Grid display='flex' direction='column' alignItems='center'>
       <Grid item>
-        <SelectUser
-          className={classes.selectUser}
-          userList={userList}
-          updateUser={updateUser}
-        />
+        <SelectUser userList={userList} updateUser={updateUser} />
       </Grid>
       <Space size={94} />
-      <Grid item className={classes.center}>
+      <Grid item>
         <Fab
           color='primary'
           data-cy='user-list-submit'
           onClick={startGame}
           disabled={!selectedUser}
         >
-          <ForwardIcon className={classes.fabForwardIcon} />
+          <ForwardIcon sx={classes.fabForwardIcon} />
         </Fab>
       </Grid>
     </Grid>
