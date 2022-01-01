@@ -10,6 +10,9 @@ import app from 'app'
 describe('gamesRouter', () => {
   const player1 = 'player1'
   const player2 = 'player2'
+  const player3 = 'player3'
+  const player4 = 'player4'
+
   let server: any
 
   beforeEach(() => {
@@ -31,9 +34,6 @@ describe('gamesRouter', () => {
 
   describe('when creating a game', () => {
     it('creates games with correct players and configuration', async () => {
-      const player3 = 'player3'
-      const player4 = 'player4'
-
       await request(server.callback()).post('/games').send({
         white_player: player1,
         black_player: player2,
@@ -63,6 +63,45 @@ describe('gamesRouter', () => {
   })
 
   describe('when game exists', () => {
+    describe('when getting the last game started', () => {
+      it('should return the game if current player is white', async () => {
+        await request(server.callback()).post('/games').send({
+          white_player: player1,
+          black_player: player2,
+        })
+
+        const { id } = (
+          await request(server.callback()).post('/games').send({
+            white_player: player1,
+            black_player: player2,
+          })
+        ).body
+
+        const subject = await request(server.callback()).get('/games/latest')
+
+        expect(subject.body.id).toStrictEqual(id)
+        expect(subject.status).toEqual(200)
+      })
+      it('should return the game if current player is black', async () => {
+        await request(server.callback()).post('/games').send({
+          white_player: player1,
+          black_player: player2,
+        })
+
+        const { id } = (
+          await request(server.callback()).post('/games').send({
+            white_player: player3,
+            black_player: player1,
+          })
+        ).body
+
+        const subject = await request(server.callback()).get('/games/latest')
+
+        expect(subject.body.id).toStrictEqual(id)
+        expect(subject.status).toEqual(200)
+      })
+    })
+
     it('should return an existing game', async () => {
       const { id } = (
         await request(server.callback()).post('/games').send({
@@ -133,7 +172,6 @@ describe('gamesRouter', () => {
   describe("when game doesn't exist", () => {
     it('should return 404', async () => {
       const response = await request(server.callback()).get(`/games/test-uuid-for-game`)
-
       expect(response.statusCode).toBe(404)
     })
   })

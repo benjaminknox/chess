@@ -33,6 +33,25 @@ gameRouter.http.post('/', async (context: Context) => {
   }
 })
 
+gameRouter.http.get('/latest', async (context: Context) => {
+  try {
+    const game = await GameModel.findOne({
+      $or: [{ white_player: context.user.sub }, { black_player: context.user.sub }],
+    })
+      .sort({ createdAt: -1 })
+      .exec()
+
+    if (game) {
+      context.body = game
+      context.status = 200
+    } else {
+      context.status = 404
+    }
+  } catch (ex) {
+    throw ex
+  }
+})
+
 gameRouter.http.get('/:id', async (context: Context) => {
   try {
     const game = await GameModel.findOne({ id: context.params.id }).exec()

@@ -52,6 +52,8 @@ export function Home() {
           className={classes.fab}
           variant='extended'
           color='secondary'
+          component={Link}
+          to='/game/latest'
           data-cy='continue-your-game'
         >
           <ForwardIcon className={classes.fabForwardIcon} />

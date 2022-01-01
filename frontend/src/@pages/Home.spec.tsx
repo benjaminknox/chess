@@ -1,22 +1,44 @@
 import { Home } from './Home'
 import * as React from 'react'
 import { mount } from '@cypress/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
 
 describe('Home', () => {
+  let testLocation: Location | any = {}
+
   beforeEach(() => {
     mount(
       <MemoryRouter initialEntries={['/']}>
         <Home />
+        <Route
+          path='*'
+          render={({ location }: RouteProps) => {
+            testLocation = location
+            return <div data-cy='test'></div>
+          }}
+        />
       </MemoryRouter>
     )
   })
 
-  it('should show start a new game button', () => {
-    cy.get('[data-cy="start-a-new-game"]').should('exist')
-  })
+  describe('when page loads', () => {
+    it('should show start a new game button', () => {
+      cy.get('[data-cy="start-a-new-game"]').should('exist')
+    })
 
-  it('should show continue your game button', () => {
-    cy.get('[data-cy="continue-your-game"]').should('exist')
+    it('should show continue your game button', () => {
+      cy.get('[data-cy="continue-your-game"]').should('exist')
+    })
+
+    describe('when going to the last game started', () => {
+      it('should go to the latest game button', () => {
+        cy.get('[data-cy="continue-your-game"]')
+          .click()
+          .then(() => {
+            // @ts-ignore
+            expect(testLocation.pathname).to.equal(`/game/latest`)
+          })
+      })
+    })
   })
 })

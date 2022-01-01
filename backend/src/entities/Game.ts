@@ -3,14 +3,19 @@ import { GameMove } from 'entities'
 
 import {
   prop,
-  plugin,
+  index,
   Severity,
   modelOptions,
+  defaultClasses,
   getModelForClass,
 } from '@typegoose/typegoose'
 
+@index({ black_player: 1 })
+@index({ white_player: 1 })
+@index({ id: 1, createdAt: 1 })
+@index({ id: 1 }, { unique: true })
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
-export class Game {
+export class Game extends defaultClasses.TimeStamps {
   @prop({ default: () => uuid() })
   public id: string
 
