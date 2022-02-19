@@ -28,7 +28,10 @@ export function LoginForm({
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
 
-  const sendLoginForm = () => onSubmit(username, password)
+  const handleFormSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
+    evt.preventDefault()
+    onSubmit(username, password)
+  }
 
   const renderSubmitFailed = function () {
     if (submitFailed) {
@@ -46,7 +49,7 @@ export function LoginForm({
   }
 
   return (
-    <form>
+    <form onSubmit={handleFormSubmit}>
       <Grid
         container
         direction='column'
@@ -90,9 +93,6 @@ export function LoginForm({
             variant='contained'
             data-cy='login-form-submit'
             disableElevation
-            onClick={() => {
-              sendLoginForm()
-            }}
           >
             Sign in
           </LoadingButton>

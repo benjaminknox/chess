@@ -30,17 +30,31 @@ describe('LoginForm', () => {
   })
 
   describe('when filling out the form', () => {
-    it('submits the values of username and password', () => {
-      mount(<TestLoginForm />)
+    describe('when testing login submit', () => {
+      beforeEach(() => {
+        mount(<TestLoginForm />)
 
-      cy.get('[data-cy="login-form-email"]').type('testUser')
-      cy.get('[data-cy="login-form-password"]').type('testPassword')
-      cy.get('[data-cy="login-form-submit"]')
-        .click()
-        .then(() => {
-          //@ts-ignore
-          expect(onSubmit).to.be.calledWith('testUser', 'testPassword')
-        })
+        cy.get('[data-cy="login-form-email"]').type('testUser')
+        cy.get('[data-cy="login-form-password"]').type('testPassword')
+      })
+
+      it('submits the values of username and password on click', () => {
+        cy.get('[data-cy="login-form-submit"]')
+          .click()
+          .then(() => {
+            //@ts-ignore
+            expect(onSubmit).to.be.calledWith('testUser', 'testPassword')
+          })
+      })
+
+      it('submits the values of username and password on enter', () => {
+        cy.get('[data-cy="login-form-password"]')
+          .type('{enter}')
+          .then(() => {
+            //@ts-ignore
+            expect(onSubmit).to.be.calledWith('testUser', 'testPassword')
+          })
+      })
     })
 
     it('shows failed state on password', () => {
