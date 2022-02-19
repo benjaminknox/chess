@@ -7,6 +7,7 @@ import {
   List,
   Grid,
   Drawer,
+  Tooltip,
   ListItem,
   IconButton,
   ListItemIcon,
@@ -68,15 +69,17 @@ export function Layout({ children }: LayoutProps) {
         </List>
       </Drawer>
       <Grid display='flex' direction='column' sx={classes.layout}>
-        <Grid item display='flex' sx={classes.nav} data-cy=''>
-          <IconButton
-            aria-label='menu'
-            sx={classes.btn}
-            data-cy='menu-button'
-            onClick={toggleDrawer}
-          >
-            <AppsIcon fontSize='inherit' />
-          </IconButton>
+        <Grid item display='flex' sx={classes.nav}>
+          <Tooltip id='menu-button-tooltip' title='menu'>
+            <IconButton
+              aria-label='menu'
+              sx={classes.btn}
+              data-cy='menu-button'
+              onClick={toggleDrawer}
+            >
+              <AppsIcon fontSize='inherit' />
+            </IconButton>
+          </Tooltip>
         </Grid>
         <Grid item display='flex' sx={classes.content}>
           {children}

@@ -24,26 +24,34 @@ describe('Layout', () => {
   it('should show the content', () => {
     cy.get('[data-cy=site-content]').should('exist')
   })
-  it('should show the menu icon', () => {
-    cy.get('[data-cy=menu-button]').should('exist')
-  })
-  describe('when menu is opened', () => {
-    it('should show mui drawer', () => {
-      cy.get('[data-cy=menu-button]').click()
-      cy.get('[data-cy=menu-drawer]').should('be.visible')
+  describe('menu icon', () => {
+    it('should show in the page', () => {
+      cy.get('[data-cy=menu-button]').should('exist')
     })
-    it('should hide mui drawer when it is closed', () => {
-      cy.get('[data-cy=menu-button]').click()
-      cy.get('[data-cy=menu-drawer]').click().should('not.exist')
+
+    it('should have a tooltip', () => {
+      cy.get('[data-cy=menu-button]').realHover();
+      cy.get('[id=menu-button-tooltip]').should('be.visible').contains('menu')
     })
-    it('should logout when logout button is clicked', () => {
-      cy.get('[data-cy=menu-button]').click()
-      cy.get('[data-cy=logout-button]')
-        .click()
-        .then(() => {
-          // @ts-ignore
-          expect(testLocation.pathname).to.equal(`/logout`)
-        })
+
+    describe('when menu is opened', () => {
+      it('should show mui drawer', () => {
+        cy.get('[data-cy=menu-button]').click()
+        cy.get('[data-cy=menu-drawer]').should('be.visible')
+      })
+      it('should hide mui drawer when it is closed', () => {
+        cy.get('[data-cy=menu-button]').click()
+        cy.get('[data-cy=menu-drawer]').click().should('not.exist')
+      })
+      it('should logout when logout button is clicked', () => {
+        cy.get('[data-cy=menu-button]').click()
+        cy.get('[data-cy=logout-button]')
+          .click()
+          .then(() => {
+            // @ts-ignore
+            expect(testLocation.pathname).to.equal(`/logout`)
+          })
+      })
     })
   })
 })
