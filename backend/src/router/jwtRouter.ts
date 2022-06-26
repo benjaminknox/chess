@@ -5,7 +5,7 @@ import { getConfig } from 'config'
 import { default as Router } from 'koa-router'
 
 const jwtRouter: Router = new Router({
-  prefix: '/api/jwt',
+  prefix: '/jwt',
 })
 
 jwtRouter.post('/login', async (ctx: Context) => {

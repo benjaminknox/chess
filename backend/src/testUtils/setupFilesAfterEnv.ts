@@ -1,9 +1,15 @@
-import { dbConnect, dbDisconnect } from './db/handler'
+import { dbConnect, dbDrop, dbDisconnect } from './db/handler'
 
-beforeEach(async () => {
+beforeAll(async () => {
   await dbConnect()
 })
 
 afterEach(async () => {
+  jest.clearAllMocks()
+  await dbDrop()
+})
+
+afterAll(async () => {
   await dbDisconnect()
+  jest.resetAllMocks()
 })

@@ -20,6 +20,7 @@ const validateToken = async (context: Context, next: Next) => {
         return next()
       })
       .catch((error: any) => {
+        console.log(error)
         context.status = 401
       })
   } else {

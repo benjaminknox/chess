@@ -99,7 +99,7 @@ describe('userRouter', () => {
     })
 
     it('gets other users to play', async () => {
-      const response = await request(app().callback()).get('/users').send()
+      const response = await request(app().callback()).get('/api/users').send()
 
       expect(response.status).toBe(200)
       expect(response.body).toStrictEqual(userListResponse)
@@ -122,7 +122,7 @@ describe('userRouter', () => {
 
     it('should get the user from the id', async () => {
       const response = await request(app().callback())
-        .get(`/users/${userListResponse[0].id}`)
+        .get(`/api/users/${userListResponse[0].id}`)
         .send()
 
       expect(response.status).toBe(200)

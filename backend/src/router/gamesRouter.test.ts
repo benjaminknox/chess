@@ -34,12 +34,12 @@ describe('gamesRouter', () => {
 
   describe('when creating a game', () => {
     it('creates games with correct players and configuration', async () => {
-      await request(server.callback()).post('/games').send({
+      await request(server.callback()).post('/api/games').send({
         white_player: player1,
         black_player: player2,
       })
 
-      await request(server.callback()).post('/games').send({
+      await request(server.callback()).post('/api/games').send({
         white_player: player3,
         black_player: player4,
       })
@@ -65,37 +65,37 @@ describe('gamesRouter', () => {
   describe('when game exists', () => {
     describe('when getting the last game started', () => {
       it('should return the game if current player is white', async () => {
-        await request(server.callback()).post('/games').send({
+        await request(server.callback()).post('/api/games').send({
           white_player: player1,
           black_player: player2,
         })
 
         const { id } = (
-          await request(server.callback()).post('/games').send({
+          await request(server.callback()).post('/api/games').send({
             white_player: player1,
             black_player: player2,
           })
         ).body
 
-        const subject = await request(server.callback()).get('/games/latest')
+        const subject = await request(server.callback()).get('/api/games/latest')
 
         expect(subject.body.id).toStrictEqual(id)
         expect(subject.status).toEqual(200)
       })
       it('should return the game if current player is black', async () => {
-        await request(server.callback()).post('/games').send({
+        await request(server.callback()).post('/api/games').send({
           white_player: player1,
           black_player: player2,
         })
 
         const { id } = (
-          await request(server.callback()).post('/games').send({
+          await request(server.callback()).post('/api/games').send({
             white_player: player3,
             black_player: player1,
           })
         ).body
 
-        const subject = await request(server.callback()).get('/games/latest')
+        const subject = await request(server.callback()).get('/api/games/latest')
 
         expect(subject.body.id).toStrictEqual(id)
         expect(subject.status).toEqual(200)
@@ -104,13 +104,13 @@ describe('gamesRouter', () => {
 
     it('should return an existing game', async () => {
       const { id } = (
-        await request(server.callback()).post('/games').send({
+        await request(server.callback()).post('/api/games').send({
           white_player: player1,
           black_player: player2,
         })
       ).body
 
-      const response = await request(server.callback()).get(`/games/${id}`)
+      const response = await request(server.callback()).get(`/api/games/${id}`)
 
       expect(response.body.id).toStrictEqual(id)
     })
@@ -121,19 +121,19 @@ describe('gamesRouter', () => {
       const secondMove = 'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2'
 
       beforeEach(async () => {
-        gameResponse = await request(server.callback()).post('/games').send({
+        gameResponse = await request(server.callback()).post('/api/games').send({
           white_player: player1,
           black_player: player2,
         })
 
         await request(server.callback())
-          .post(`/games/${gameResponse.body.id}/move`)
+          .post(`/api/games/${gameResponse.body.id}/move`)
           .send({
             move: firstMove,
           })
 
         await request(server.callback())
-          .post(`/games/${gameResponse.body.id}/move`)
+          .post(`/api/games/${gameResponse.body.id}/move`)
           .send({
             move: secondMove,
           })
@@ -157,7 +157,7 @@ describe('gamesRouter', () => {
         describe('when the black moves but it is not the logged in user move', () => {
           it('should not save the move', async () => {
             const response = await request(server.callback())
-              .post(`/games/${gameResponse.body.id}/move`)
+              .post(`/api/games/${gameResponse.body.id}/move`)
               .send({
                 move: secondMove,
               })
@@ -171,7 +171,7 @@ describe('gamesRouter', () => {
 
   describe("when game doesn't exist", () => {
     it('should return 404', async () => {
-      const response = await request(server.callback()).get(`/games/test-uuid-for-game`)
+      const response = await request(server.callback()).get(`/api/games/test-uuid-for-game`)
       expect(response.statusCode).toBe(404)
     })
   })
