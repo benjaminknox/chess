@@ -73,7 +73,7 @@ export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
   }))
 
   store.on('auth/refreshIdentity', (state, configs: ConfigsResponse) => {
-    fetch(`${configs.values?.apiBasePath}/api/jwt/refresh`, {
+    fetch(`${configs.values?.apiBasePath}/jwt/refresh`, {
       method: 'POST',
       body: b({
         token: state.Auth.identity?.refresh_token,

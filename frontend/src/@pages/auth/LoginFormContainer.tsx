@@ -16,7 +16,7 @@ export function LoginFormContainer() {
   const onSubmit = (username: string, password: string) => {
     if (configs.values) {
       setLoading(true)
-      fetch(`${configs.values.apiBasePath}/api/jwt/login`, {
+      fetch(`${configs.values.apiBasePath}/jwt/login`, {
         method: 'POST',
         body: b({
           auth: btoa(`${username}:${password}`),

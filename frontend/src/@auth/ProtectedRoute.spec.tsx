@@ -87,7 +87,7 @@ describe('ProtectedRoute', () => {
           refresh_expires_in: 17000,
         }
 
-        const apiBasePath = 'http://test'
+        const apiBasePath = 'http://test/api'
 
         mountWithFetchMocking(
           <StoreContext.Provider value={store}>
@@ -98,7 +98,7 @@ describe('ProtectedRoute', () => {
             </ConfigsProviderForTesting>
           </StoreContext.Provider>,
           {
-            path: `${apiBasePath}/api/jwt/refresh`,
+            path: `${apiBasePath}/jwt/refresh`,
             method: 'POST',
             inputData: {
               token: identityResponse.refresh_token,
