@@ -38,9 +38,10 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
           if (body.moves.length > 0) {
             setChess(new Chess(body.moves[body.moves.length - 1].move))
           }
+
+          if (configs.values) setGameSocketUri(`${configs.values.websocketBasePath}/games/${body.id}`)
         })
 
-      setGameSocketUri(`${configs.values.websocketBasePath}/games/${gameId}`)
     }
   }, [configs.values, Auth.identity.access_token])
 
