@@ -12,6 +12,7 @@ describe('gamesRouter', () => {
   const player2 = 'player2'
   const player3 = 'player3'
   const player4 = 'player4'
+  const players = [player1, player2, player3, player4]
 
   let server: any
 
@@ -30,6 +31,51 @@ describe('gamesRouter', () => {
 
   afterAll(() => {
     jest.clearAllMocks()
+  })
+
+  describe('when listing games', () => {
+    const insertGames = async () => {
+      const index = Math.floor(Math.random() * 4)
+
+      const games = Array.from({ length: 15 }, () => ({
+        white_player: player1,
+        black_player: players[Math.floor(Math.random() * 3 + 1)],
+      }))
+
+      return await Promise.all(
+        games
+          .map(
+            async game => await request(server.callback()).post('/api/games').send(game)
+          )
+          .map(async response => (await response).body)
+      )
+    }
+    it('should show first page, or 10 games, for the user', async () => {
+      await insertGames()
+
+      const response = await request(server.callback()).get('/api/games')
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body).toHaveLength(10)
+    })
+
+    it('should show second page of games for the user', async () => {
+      const games = await insertGames()
+
+      const response = await request(server.callback()).get('/api/games?page=2')
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body[0]).toEqual(games[10])
+    })
+
+    it('should show 15 games for larger page parameter', async () => {
+      const games = await insertGames()
+
+      const response = await request(server.callback()).get('/api/games?pageSize=15')
+
+      expect(response.statusCode).toBe(200)
+      expect(response.body).toHaveLength(15)
+    })
   })
 
   describe('when creating a game', () => {
@@ -171,7 +217,9 @@ describe('gamesRouter', () => {
 
   describe("when game doesn't exist", () => {
     it('should return 404', async () => {
-      const response = await request(server.callback()).get(`/api/games/test-uuid-for-game`)
+      const response = await request(server.callback()).get(
+        `/api/games/test-uuid-for-game`
+      )
       expect(response.statusCode).toBe(404)
     })
   })

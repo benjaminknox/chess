@@ -9,6 +9,17 @@ const config = { prefix: '/games' }
 
 const gameRouter = { http: new Router(config), ws: new Router(config) }
 
+gameRouter.http.get('/', async (context: Context) => {
+  const page = context.request.query.page ? Number(context.request.query.page) : 1
+  const pageSize = context.request.query.pageSize ? Number(context.request.query.pageSize) : 10
+  const game = await GameModel.find({
+    $or: [{ white_player: context.user.sub }, { black_player: context.user.sub }],
+  }).skip((page - 1) * pageSize).limit(pageSize)
+
+  context.body = game;
+  context.status = 200
+})
+
 gameRouter.http.post('/', async (context: Context) => {
   try {
     const white_player = context.request.body.white_player
