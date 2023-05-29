@@ -51,10 +51,10 @@ export function Home() {
           color='secondary'
           component={Link}
           to='/game/latest'
-          data-cy='continue-your-game'
+          data-cy='continue-last-game'
         >
           <ForwardIcon sx={classes.fabForwardIcon} />
-          <Box sx={classes.fabText}>Continue Your Game</Box>
+          <Box sx={classes.fabText}>Continue Last Game</Box>
         </Fab>
       </Grid>
     </Grid>

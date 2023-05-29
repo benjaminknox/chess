@@ -28,8 +28,12 @@ describe('Board', () => {
     white_player: decodedFakeAccessToken.sub,
     black_player: 'black-player-id',
     moves: [],
-    id: 'test-game-id',
+    id: '',
     __v: 0,
+  }
+
+  const setGameId = (gameId: string = 'test-game-id') => {
+    game.id = gameId
   }
 
   const whitePlayer = {
@@ -79,6 +83,7 @@ describe('Board', () => {
 
   describe('when loading board for the first time', () => {
     beforeEach(() => {
+      setGameId()
       const testMove1 = 'rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq - 0 1'
       const testMove2 = 'rnbqkbnr/pppp1ppp/4p3/8/8/6P1/PPPPPP1P/RNBQKBNR w KQkq - 0 2'
 
@@ -107,7 +112,7 @@ describe('Board', () => {
           path: `${basePath}/games/${game.id}/move`,
           method: 'POST',
           inputData: { move: testMove2 },
-          responseData: { ...game, moves: [{ move: testMove2, id: 2 }] },
+          responseData: { ...game, moves: [{ move: testMove1, id: 2 }] },
           headers: {
             'Content-type': 'application/json',
             Authorization: `Bearer ${fakeIdentity.access_token}`,
@@ -121,6 +126,26 @@ describe('Board', () => {
       cy.get('[data-square] [draggable]').should('have.length', 32)
       //@ts-ignore
       expect(fetchStub).to.be.calledThrice
+    })
+
+    describe('when the move is valid', () => {
+      it('should update the board after move', () => {
+        cy.get('[data-square] [draggable]').should('have.length', 32)
+
+
+        cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
+          cy.get('[data-square=g3]').then($droppable => {
+            const dataTransfer = { dataTransfer: new DataTransfer() }
+
+            cy.wrap($draggable).trigger('dragstart', dataTransfer)
+            cy.wrap($droppable)
+              .trigger('drop', dataTransfer)
+              .trigger('mouseup', { force: true })
+         })
+        })
+
+        cy.get('[data-square=g3] div[draggable=true]').should('exist')
+      })
     })
 
     describe('when the move is invalid', () => {
@@ -152,34 +177,11 @@ describe('Board', () => {
         cy.get('div[data-square=e6] [draggable]').should('not.exist')
       })
     })
-
-    describe('when the move is valid', () => {
-      it('should update the board after move', () => {
-        cy.get('[data-square] [draggable]').should('have.length', 32)
-
-        cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
-          cy.get('[data-square=g3]').then($droppable => {
-            const dataTransfer = { dataTransfer: new DataTransfer() }
-
-            cy.wrap($draggable).trigger('dragstart', dataTransfer)
-            cy.wrap($droppable)
-              .trigger('drop', dataTransfer)
-              .trigger('mouseup', { force: true })
-          })
-        })
-
-        cy.get('div[data-square=g3] [draggable]')
-          .should('exist')
-          .then(() => {
-            //@ts-ignore
-            expect(fetchStub).to.have.callCount(4)
-          })
-      })
-    })
   })
 
   describe('when loading an existing board', () => {
     beforeEach(() => {
+      setGameId()
       fetchStub = mountWithFetchMocking(
         <TestBoardContainer />,
         {
@@ -222,6 +224,68 @@ describe('Board', () => {
     it('should show the user avatars', () => {
       cy.get('[data-cy=avatar-left]').contains(blackPlayer.username)
       cy.get('[data-cy=avatar-right]').contains('me')
+    })
+  })
+
+  describe('when loading an the last game', () => {
+    const returnedGameId = 'the-returned-game-id'
+    const move = 'rnbqkbnr/pp3ppp/8/3pp3/8/5PP1/PPPPK2P/RNBQ1BNR b kq - 0 5'
+
+    beforeEach(() => {
+      setGameId('latest')
+      fetchStub = mountWithFetchMocking(
+        <TestBoardContainer />,
+        {
+          path: `${basePath}/games/${game.id}`,
+          method: 'GET',
+          responseData: {
+            ...game,
+            id: returnedGameId,
+            moves: [
+              {
+                move: 'rnbqkbnr/pp3ppp/8/3pp3/8/5P2/PPPPK1PP/RNBQ1BNR w kq - 0 5',
+                move_number: 3,
+              },
+            ],
+          },
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${fakeIdentity.access_token}`,
+          },
+        },
+        {
+          path: `${basePath}/games/${returnedGameId}/move`,
+          method: 'POST',
+          inputData: { move },
+          responseData: { ...game, moves: [{ move, id: 2 }] },
+          headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${fakeIdentity.access_token}`,
+          },
+        },
+        ...userFechMocks
+      )
+    })
+
+    it('should call move with returned game id', () => {
+        cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
+          cy.get('[data-square=g3]').then($droppable => {
+            const dataTransfer = { dataTransfer: new DataTransfer() }
+
+            cy.wrap($draggable).trigger('dragstart', dataTransfer)
+            cy.wrap($droppable)
+              .trigger('drop', dataTransfer)
+              .trigger('mouseup', { force: true })
+
+          })
+        })
+
+      cy.get('[data-square=f3] div[draggable=true]').should('exist')
+        .then(() => {
+          //@ts-ignore
+          expect(fetchStub).to.be.calledWithMatch(returnedGameId)
+        })
+
     })
   })
 

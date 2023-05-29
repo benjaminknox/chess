@@ -55,7 +55,7 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
     const move = board.move({ from: sourceSquare, to: targetSquare })
 
     if (configs.values) {
-      fetch(`${configs.values.apiBasePath}/games/${gameId}/move`, {
+      fetch(`${configs.values.apiBasePath}/games/${game.id}/move`, {
         method: 'POST',
         body: b({
           move: board.fen(),

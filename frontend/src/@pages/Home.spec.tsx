@@ -27,12 +27,12 @@ describe('Home', () => {
     })
 
     it('should show continue your game button', () => {
-      cy.get('[data-cy="continue-your-game"]').should('exist')
+      cy.get('[data-cy="continue-last-game"]').should('exist')
     })
 
     describe('when going to the last game started', () => {
       it('should go to the latest game button', () => {
-        cy.get('[data-cy="continue-your-game"]')
+        cy.get('[data-cy="continue-last-game"]')
           .click()
           .then(() => {
             // @ts-ignore
