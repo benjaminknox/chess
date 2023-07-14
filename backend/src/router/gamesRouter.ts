@@ -1,6 +1,9 @@
+import qs from 'qs'
+import axios from 'axios'
 import { Context } from 'koa'
 import { Chess } from 'chess.js'
 import { createClient } from 'redis'
+import { getConfig, IConfig } from 'config'
 import { default as Router } from 'koa-router'
 import { GameModel, GameMoveModel } from 'entities'
 import { publishMessage, subscribe } from 'bootstrap/redis'
@@ -9,14 +12,60 @@ const config = { prefix: '/games' }
 
 const gameRouter = { http: new Router(config), ws: new Router(config) }
 
-gameRouter.http.get('/', async (context: Context) => {
-  const page = context.request.query.page ? Number(context.request.query.page) : 1
-  const pageSize = context.request.query.pageSize ? Number(context.request.query.pageSize) : 10
-  const game = await GameModel.find({
-    $or: [{ white_player: context.user.sub }, { black_player: context.user.sub }],
-  }).skip((page - 1) * pageSize).limit(pageSize)
+const getKeycloakAdminAccess = async (config: IConfig) =>
+  await axios({
+    url: `${config.keycloakUri}/auth/realms/${config.keycloakRealm}/protocol/openid-connect/token`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    data: qs.stringify({
+      client_id: config.oauthClientId,
+      grant_type: 'client_credentials',
+      client_secret: config.oauthClientSecret,
+    }),
+  })
 
-  context.body = game;
+gameRouter.http.get('/', async (context: Context) => {
+  const config = getConfig()
+  const page = context.request.query.page ? Number(context.request.query.page) : 1
+  const pageSize = context.request.query.pageSize
+    ? Number(context.request.query.pageSize)
+    : 10
+  const games = await GameModel.find({
+    $or: [{ white_player: context.user.sub }, { black_player: context.user.sub }],
+  })
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
+
+  const admin: any = await getKeycloakAdminAccess(config)
+
+  const uniquePlayerIds = [
+    ...new Set(games.map(game => [game.white_player, game.black_player]).flat(1)),
+  ]
+
+  const playersData = Object.assign(
+    {},
+    ...(
+      await Promise.all(
+        uniquePlayerIds.map(id =>
+          axios({
+            url: `${config.keycloakUri}/auth/admin/realms/${config.keycloakRealm}/users/${id}`,
+            method: 'GET',
+            headers: {
+              authorization: `${admin.data.token_type} ${admin.data.access_token}`,
+            },
+          }).then((response: any) => response.data)
+        )
+      )
+    ).map(player => ({ [player.id]: player }))
+  )
+
+  const gamesResult = games.map(game => ({
+    ...game.toObject(),
+    white_player: playersData[game.white_player],
+    black_player: playersData[game.black_player],
+  }))
+
+  context.body = gamesResult
   context.status = 200
 })
 

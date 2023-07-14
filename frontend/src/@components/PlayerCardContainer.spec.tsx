@@ -18,21 +18,21 @@ describe('PlayerCardContainer', () => {
   })
 
   it('should show player name with left alignment', () => {
-    mountPlayerCardContaienr('left')
+    mountPlayerCardContainer('left')
     cy.get('[data-cy=avatar-left]').contains(user.username)
   })
 
   it('should show player name with right alignment', () => {
-    mountPlayerCardContaienr('right')
+    mountPlayerCardContainer('right')
     cy.get('[data-cy=avatar-right]').contains(user.username)
   })
 
   it('should use "me" for name if logged in user is the player', () => {
-    mountPlayerCardContaienr('right', decodedFakeAccessToken.sub)
+    mountPlayerCardContainer('right', decodedFakeAccessToken.sub)
     cy.get('[data-cy=avatar-right]').should('not.contain', user.username)
   })
 
-  function mountPlayerCardContaienr(align: Align, userId = 'test-user-id') {
+  function mountPlayerCardContainer(align: Align, userId = 'test-user-id') {
     return mountWithFetchMocking(
       <StoreContext.Provider value={store}>
         <ConfigsProviderForTesting

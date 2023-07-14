@@ -1173,12 +1173,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
-"@cypress/react@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@cypress/react/-/react-6.0.0.tgz#e994192088a1f1451dab76a480dd416515398c3e"
-  integrity sha512-XHAtsu3LA3YWVwdFbr3d3ZgvORVZgIvAwwk9BEWJK7Wcveu/+F9lO5DeKgUa66H21tZXKonF+NsErojKZPvR+g==
-  dependencies:
-    debug "^4.3.2"
+"@cypress/react@^7.0.3":
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/@cypress/react/-/react-7.0.3.tgz#e62d67c1344265ee959e99100ce237663f20abb1"
+  integrity sha512-YseqnMugTbdPV9YCYEMXVqIf+P7x+pfjXOdjv4dnDFqNCZeHaZfOZVFZ4XfEHVxMv0aDszxlaLiIp3QDPhr12w==
 
 "@cypress/request@^2.88.10":
   version "2.88.10"
@@ -4871,10 +4869,10 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
-cypress-real-events@^1.7.1:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/cypress-real-events/-/cypress-real-events-1.7.1.tgz#8f430d67c29ea4f05b9c5b0311780120cbc9b935"
-  integrity sha512-/Bg15RgJ0SYsuXc6lPqH08x19z6j2vmhWN4wXfJqm3z8BTAFiK2MvipZPzxT8Z0jJP0q7kuniWrLIvz/i/8lCQ==
+cypress-real-events@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/cypress-real-events/-/cypress-real-events-1.8.1.tgz#d00c7fe93124bbe7c0f27296684838614d24a840"
+  integrity sha512-8fFnA8EzS3EVbAmpSEUf3A8yZCmfU3IPOSGUDVFCdE1ke1gYL1A+gvXXV6HKUbTPRuvKKt2vpaMbUwYLpDRswQ==
 
 cypress@^10.3.0:
   version "10.3.0"
@@ -9085,6 +9083,11 @@ mock-websocket@^0.0.7:
   integrity sha512-msBc5kX1yIL8E/oMSFY2oTAWb2l3Wo6wYtXdvIY5fxP6925gIaiYOCKqGUK+ybQE59Z0m4Tv0uEpBU6BvH5q5Q==
   dependencies:
     url-parse "^1.4.4"
+
+mongoid-js@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/mongoid-js/-/mongoid-js-1.3.0.tgz#99641b5920d378104fa8cdd1527f0d34ef95401e"
+  integrity sha512-mItu/Ybv1BDplKI/UpR6LuOi6UXWrwig7S3yeUfC2U9oJIb9zvFsDtCcbX75aUhJvyx5TM2EYmnOsCuvd2pAVA==
 
 move-concurrently@^1.0.1:
   version "1.0.1"

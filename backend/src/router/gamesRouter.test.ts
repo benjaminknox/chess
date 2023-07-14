@@ -1,6 +1,7 @@
 import axios from 'axios'
 import request from 'supertest'
 import { GameModel } from 'entities'
+import { getConfig, IConfig } from 'config'
 
 jest.mock('axios')
 jest.mock('bootstrap/redis')
@@ -8,11 +9,28 @@ jest.mock('bootstrap/redis')
 import app from 'app'
 
 describe('gamesRouter', () => {
+  let config: IConfig = getConfig()
+
+  const keyCloakServiceTokenUrl = `${config.keycloakUri}/auth/realms/${config.keycloakRealm}/protocol/openid-connect/token`
+  const keyCloakServiceTokenResp = {
+    access_token: 'service-account-access-token',
+    expires_in: 600,
+    refresh_expires_in: 0,
+    token_type: 'Bearer',
+    'not-before-policy': 0,
+    scope: 'email profile',
+  }
+
   const player1 = 'player1'
   const player2 = 'player2'
   const player3 = 'player3'
   const player4 = 'player4'
   const players = [player1, player2, player3, player4]
+
+  const urls = players.map(id => ({
+    id,
+    url: `${config.keycloakUri}/auth/admin/realms/${config.keycloakRealm}/users/${id}`,
+  }))
 
   let server: any
 
@@ -22,11 +40,47 @@ describe('gamesRouter', () => {
 
   beforeAll(() => {
     //@ts-ignore
-    axios.mockImplementation(request =>
-      Promise.resolve({
+    axios.mockImplementation(request => {
+      if (request.url === keyCloakServiceTokenUrl) {
+        return Promise.resolve({
+          status: 200,
+          data: keyCloakServiceTokenResp,
+        })
+      }
+
+      const urlIndex = urls.map(url => url.url).indexOf(request.url)
+      if (urlIndex !== -1) {
+        const player = urls[urlIndex]
+
+        return Promise.resolve({
+          data: {
+            id: player.id,
+            createdTimestamp: 1617669141774,
+            username: player.id,
+            enabled: true,
+            totp: false,
+            emailVerified: true,
+            firstName: player.id,
+            lastName: 'User',
+            email: `${player.id}@test.email`,
+            disableableCredentialTypes: [],
+            requiredActions: [],
+            notBefore: 0,
+            access: {
+              manageGroupMembership: false,
+              view: true,
+              mapRoles: false,
+              impersonate: false,
+              manage: false,
+            },
+          },
+        })
+      }
+
+      return Promise.resolve({
         data: request.url === 'http://test-client/validate' ? { sub: 'player1' } : {},
       })
-    )
+    })
   })
 
   afterAll(() => {
@@ -65,7 +119,9 @@ describe('gamesRouter', () => {
       const response = await request(server.callback()).get('/api/games?page=2')
 
       expect(response.statusCode).toBe(200)
-      expect(response.body[0]).toEqual(games[10])
+      expect(response.body[0].id).toEqual(games[10].id)
+      expect(response.body[0].white_player.id).toEqual(games[10].white_player)
+      expect(response.body[0].black_player.id).toEqual(games[10].black_player)
     })
 
     it('should show 15 games for larger page parameter', async () => {

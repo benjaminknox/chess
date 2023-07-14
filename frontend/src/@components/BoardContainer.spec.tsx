@@ -132,7 +132,6 @@ describe('Board', () => {
       it('should update the board after move', () => {
         cy.get('[data-square] [draggable]').should('have.length', 32)
 
-
         cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
           cy.get('[data-square=g3]').then($droppable => {
             const dataTransfer = { dataTransfer: new DataTransfer() }
