@@ -50,8 +50,8 @@ function useConfigsResponse(): ConfigsResponse {
 
   useEffect(() => {
     setConfigs({
-      apiBasePath: process.env.REACT_APP_API_BASE_PATH ?? '',
-      websocketBasePath: process.env.REACT_APP_WEBSOCKET_BASE_PATH ?? '',
+      apiBasePath: process.env.REACT_APP_API_BASE_PATH ?? '/api',
+      websocketBasePath: process.env.REACT_APP_WEBSOCKET_BASE_PATH ?? '/ws',
     })
   }, [])
 
