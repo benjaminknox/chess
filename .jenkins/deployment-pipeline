@@ -1,0 +1,69 @@
+pipeline {
+
+  agent none
+
+  stages {
+    stage('build') {
+      parallel {
+        stage('build-backend') {
+          agent {
+            kubernetes {
+              yaml k8sDeploymentAgent()
+            }
+          }
+
+          steps {
+            getRepoCode()
+            buildContainer("staging", "chess-backend", "backend/Dockerfile", "backend")
+          }
+        }
+        stage('build-frontend') {
+          agent {
+            kubernetes {
+              yaml k8sDeploymentAgent("frontend-builder")
+            }
+          }
+
+          steps {
+            getRepoCode()
+            buildContainer("staging", "chess-frontend", "frontend/Dockerfile", "frontend")
+          }
+        }
+      }
+    }
+
+
+    stage('deployments') {
+      agent {
+        kubernetes {
+          yaml k8sDeploymentAgent()
+        }
+      }
+
+      stages {
+        stage('Create Secrets') {
+          steps {
+            manageSecrets('staging', [
+              "REDIS_CONNECTION",
+              "KEYCLOAK_URI",
+              "KEYCLOAK_REALM",
+              "OAUTH_CLIENT_SECRET",
+              "OAUTH_CLIENT_URL",
+              "OAUTH_VALIDATION_URL",
+              "MONGODB_CONNECTION",
+              "REACT_APP_API_BASE_PATH",
+              "REACT_APP_WEBSOCKET_BASE_PATH",
+            ])
+          }
+        }
+
+        stage('Deploy App') {
+          steps {
+            getRepoCode()
+            deploy('staging', 'k8s')
+          }
+        }
+      }
+    }
+  }
+}
