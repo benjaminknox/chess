@@ -29,14 +29,14 @@ describe('notificationRouter', () => {
 
   describe('when creating a notification', () => {
     it('creates a notification for the player', async () => {
-      const player_id = 'test-player-id';
-      const message =  'test-message';
-      const game_id = "test-game-id";
+      const player_id = 'test-player-id'
+      const message = 'test-message'
+      const game_id = 'test-game-id'
 
       const response = await request(server.callback()).post('/api/notifications').send({
         player_id,
         message,
-        game_id
+        game_id,
       })
 
       const notificationModels = await NotificationModel.find().exec()
@@ -47,23 +47,41 @@ describe('notificationRouter', () => {
     })
   })
 
-  describe('when notification exists', () => {
+  describe('when notifications exist', () => {
+    it('should return a notification list', async () => {
+      const player_id = 'test-player-id'
+      const message = 'test-message'
+      const game_id = 'test-game-id'
+
+      const { _id } = (
+        await request(server.callback()).post('/api/notifications').send({
+          player_id,
+          message,
+          game_id,
+        })
+      ).body
+
+      const response = await request(server.callback()).get(`/api/notifications`)
+
+      expect(response.body[0]._id).toStrictEqual(_id)
+    })
+
     it('should return a notification', async () => {
+      const player_id = 'test-player-id'
+      const message = 'test-message'
+      const game_id = 'test-game-id'
 
-      const player_id = 'test-player-id';
-      const message =  'test-message';
-      const game_id = "test-game-id";
-
-      const { _id } = (await request(server.callback()).post('/api/notifications').send({
-        player_id,
-        message,
-        game_id
-      })).body
+      const { _id } = (
+        await request(server.callback()).post('/api/notifications').send({
+          player_id,
+          message,
+          game_id,
+        })
+      ).body
 
       const response = await request(server.callback()).get(`/api/notifications/${_id}`)
 
       expect(response.body._id).toStrictEqual(_id)
-
     })
   })
 })

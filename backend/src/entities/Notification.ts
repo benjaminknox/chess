@@ -23,6 +23,9 @@ export class Notification extends defaultClasses.TimeStamps {
 
   @prop({ required: false })
   public game_id: string
+
+  @prop({ required: false })
+  public opened: boolean
 }
 
 export const NotificationModel = getModelForClass(Notification)

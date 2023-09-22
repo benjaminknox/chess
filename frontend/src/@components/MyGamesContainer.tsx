@@ -21,7 +21,7 @@ export function MyGamesContainer() {
         .then(response => response.json())
         .then(data => setGames(data))
     }
-  }, [])
+  }, [configs.values])
 
   return <MyGames games={games} />
 }

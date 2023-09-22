@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useQuery } from '@hooks'
 import { Fab } from '@mui/material'
 import { useCallback } from 'react'
+import { Grid } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -19,13 +20,13 @@ export const Pagination = () => {
   }
 
   return (
-    <div data-cy='pagination'>
-      <Fab data-cy='pagination-prev' onClick={() => handlePagination(-1)}>
+    <Grid data-cy='pagination' justifyContent="space-between" container>
+      <Fab color='primary' data-cy='pagination-prev' onClick={() => handlePagination(-1)}>
         <ArrowBackIcon />
       </Fab>
-      <Fab data-cy='pagination-next' onClick={() => handlePagination(1)}>
+      <Fab color='primary' data-cy='pagination-next' onClick={() => handlePagination(1)}>
         <ArrowForwardIcon />
       </Fab>
-    </div>
+    </Grid>
   )
 }

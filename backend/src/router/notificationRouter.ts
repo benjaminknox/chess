@@ -44,4 +44,19 @@ notificationRouter.http.get('/:id', async (context: Context) => {
   }
 })
 
+notificationRouter.http.get('/', async (context: Context) => {
+  try {
+    const notifications = await NotificationModel.find({ id: context.params.id }).exec()
+
+    if (notifications) {
+      context.body = notifications
+      context.status = 200
+    } else {
+      context.status = 404
+    }
+  } catch (ex) {
+    throw ex
+  }
+})
+
 export default notificationRouter

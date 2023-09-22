@@ -140,7 +140,7 @@ describe('Board', () => {
             cy.wrap($droppable)
               .trigger('drop', dataTransfer)
               .trigger('mouseup', { force: true })
-         })
+          })
         })
 
         cy.get('[data-square=g3] div[draggable=true]').should('exist')
@@ -267,24 +267,23 @@ describe('Board', () => {
     })
 
     it('should call move with returned game id', () => {
-        cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
-          cy.get('[data-square=g3]').then($droppable => {
-            const dataTransfer = { dataTransfer: new DataTransfer() }
+      cy.get('[data-square=g2] div[draggable=true]').then($draggable => {
+        cy.get('[data-square=g3]').then($droppable => {
+          const dataTransfer = { dataTransfer: new DataTransfer() }
 
-            cy.wrap($draggable).trigger('dragstart', dataTransfer)
-            cy.wrap($droppable)
-              .trigger('drop', dataTransfer)
-              .trigger('mouseup', { force: true })
-
-          })
+          cy.wrap($draggable).trigger('dragstart', dataTransfer)
+          cy.wrap($droppable)
+            .trigger('drop', dataTransfer)
+            .trigger('mouseup', { force: true })
         })
+      })
 
-      cy.get('[data-square=f3] div[draggable=true]').should('exist')
+      cy.get('[data-square=f3] div[draggable=true]')
+        .should('exist')
         .then(() => {
           //@ts-ignore
           expect(fetchStub).to.be.calledWithMatch(returnedGameId)
         })
-
     })
   })
 

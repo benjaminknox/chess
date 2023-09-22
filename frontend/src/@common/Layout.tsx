@@ -2,6 +2,8 @@ import { useHistory } from 'react-router-dom'
 import AppsIcon from '@mui/icons-material/Apps'
 import React, { ReactNode, useState } from 'react'
 import ForwardIcon from '@mui/icons-material/Forward'
+import ViewListIcon from '@mui/icons-material/ViewList';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import {
   Link,
   List,
@@ -27,6 +29,13 @@ const classes = {
   btn: {
     '& svg': {
       fontSize: '48px',
+    },
+  },
+  notificationsBtn: {
+    width: '48px',
+    height: '48px',
+    '& svg': {
+      fontSize: '32px',
     },
   },
   nav: {
@@ -58,6 +67,16 @@ export function Layout({ children }: LayoutProps) {
         <List sx={classes.menuDrawerList}>
           <ListItem
             button
+            data-cy='my-games-button'
+            onClick={() => history.push('/my-games')}
+          >
+            <ListItemIcon>
+              <ViewListIcon />
+            </ListItemIcon>
+            <ListItemText primary='My Games' />
+          </ListItem>
+          <ListItem
+            button
             data-cy='logout-button'
             onClick={() => history.push('/logout')}
           >
@@ -69,7 +88,14 @@ export function Layout({ children }: LayoutProps) {
         </List>
       </Drawer>
       <Grid display='flex' direction='column' sx={classes.layout}>
-        <Grid item display='flex' sx={classes.nav}>
+        <Grid item display='flex' sx={classes.nav} alignItems='center'>
+            <IconButton
+              aria-label='menu'
+              sx={classes.notificationsBtn}
+              data-cy='notifications-button'
+            >
+              <NotificationsIcon fontSize='inherit' />
+            </IconButton>
           <Tooltip id='menu-button-tooltip' title='menu'>
             <IconButton
               aria-label='menu'
