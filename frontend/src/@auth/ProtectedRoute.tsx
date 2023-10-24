@@ -2,9 +2,13 @@ import * as React from 'react'
 import { Layout } from '@common'
 import { useConfigs } from '@common'
 import { useStoreon } from 'storeon/react'
-import { Redirect, Route } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
-export function ProtectedRoute({ component: Component, ...restOfProps }: any) {
+interface ProtectedRouteProps {
+  component: React.FC
+}
+
+export function ProtectedRoute({ component: Component }: ProtectedRouteProps) {
   const configs = useConfigs()
   const { dispatch, Auth } = useStoreon('Auth')
 
@@ -17,21 +21,14 @@ export function ProtectedRoute({ component: Component, ...restOfProps }: any) {
     Auth.session.refreshTokenExpiration < Date.now()
   ) {
     dispatch('auth/resetIdentity')
-    return <Redirect to='/login' />
+    return <Navigate to='/login' />
   }
 
-  return (
-    <Route
-      {...restOfProps}
-      render={props =>
-        Auth.isAuthenticated ? (
-          <Layout>
-            <Component {...props} />
-          </Layout>
-        ) : (
-          <Redirect to='/login' />
-        )
-      }
-    />
+  return Auth.isAuthenticated ? (
+    <Layout>
+      <Component />
+    </Layout>
+  ) : (
+    <Navigate to='/login' />
   )
 }

@@ -4,7 +4,7 @@ import { ConfigsResponse } from '@common'
 import { accessToken } from '@common/types'
 import { b } from '@api/common/bodyParamsParser'
 
-interface IdentityProps {
+export interface IdentityProps {
   scope: string
   id_token: string
   expires_in: number
@@ -81,7 +81,7 @@ export const Auth: StoreonModule<AuthState, AuthEvents> = store => {
       headers: {
         'Content-type': 'application/json',
       },
-    }).then(async (response: any) => {
+    }).then(async (response: {json: () => Promise<IdentityProps>}) => {
       store.dispatch('auth/setIdentity', await response.json())
     })
   })

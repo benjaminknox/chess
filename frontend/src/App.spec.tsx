@@ -5,7 +5,7 @@ import { mount } from '@cypress/react'
 import { StoreContext } from 'storeon/react'
 import { SinonStub } from 'cypress/types/sinon'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
-import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 describe('App', () => {
   const store = createStoreon()
@@ -21,8 +21,8 @@ describe('App', () => {
         <App />
         <Route
           path='*'
-          render={({ location }: RouteProps) => {
-            testLocation = location
+          Component={() => {
+            testLocation = useLocation()
             return <div data-cy='test'></div>
           }}
         />

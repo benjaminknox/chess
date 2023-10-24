@@ -2,7 +2,7 @@ import React from 'react'
 import { App } from './App'
 import { Theme } from '@common'
 import createStore from '@store'
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom/client'
 import { StoreContext } from 'storeon/react'
 import reportWebVitals from './reportWebVitals'
 import { BrowserRouter } from 'react-router-dom'
@@ -10,7 +10,7 @@ import { ConfigsProvider } from '@common/configs'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 
-ReactDOM.render(
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <ThemeProvider theme={Theme}>
       <CssBaseline />
@@ -22,8 +22,7 @@ ReactDOM.render(
         </ConfigsProvider>
       </StoreContext.Provider>
     </ThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 )
 
 // If you want to start measuring performance in your app, pass a function

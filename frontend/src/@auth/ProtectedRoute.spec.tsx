@@ -7,23 +7,29 @@ import { ProtectedRoute } from './ProtectedRoute'
 import { mountWithFetchMocking } from '@testUtils'
 import { ConfigsProviderForTesting } from '@common'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
-import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
+import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom'
 
 describe('ProtectedRoute', () => {
   let testLocation: Location | any = {}
 
   const TestComponent = () => (
     <MemoryRouter initialEntries={['/']} initialIndex={1}>
-      <ProtectedRoute
-        component={() => <div data-cy='protected-test-route'>Protected Route</div>}
-      />
-      <Route
-        path='*'
-        render={({ location }: RouteProps) => {
-          testLocation = location
-          return <div data-cy='test'></div>
-        }}
-      />
+      <Routes>
+        <Route
+          element={
+            <ProtectedRoute
+              component={() => <div data-cy='protected-test-route'>Protected Route</div>}
+            />
+          }
+        />
+        <Route
+          path='*'
+          Component={() => {
+            testLocation = useLocation()
+            return <div data-cy='test'></div>
+          }}
+        />
+      </Routes>
     </MemoryRouter>
   )
 
@@ -88,11 +94,12 @@ describe('ProtectedRoute', () => {
         }
 
         const apiBasePath = 'http://test/api'
+        const websocketBasePath = 'ws://test/ws'
 
         mountWithFetchMocking(
           <StoreContext.Provider value={store}>
             <ConfigsProviderForTesting
-              config={{ values: { apiBasePath }, loading: false, failed: false }}
+              config={{ values: { apiBasePath, websocketBasePath }, loading: false, failed: false }}
             >
               <TestComponent />
             </ConfigsProviderForTesting>

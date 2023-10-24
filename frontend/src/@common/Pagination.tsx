@@ -1,20 +1,19 @@
 import * as React from 'react'
 import { useQuery } from '@hooks'
 import { Fab } from '@mui/material'
-import { useCallback } from 'react'
 import { Grid } from '@mui/material'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 export const Pagination = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const query = useQuery()
 
   const handlePagination = (increment: number) => {
     const currentPage = Number(query.get('page') ?? 0)
     const page = `${currentPage + increment}`
-    history.push({
+    navigate({
       search: "?" + new URLSearchParams({page}).toString()
     })
   }

@@ -1,13 +1,13 @@
 import Chess from 'chess.js'
-import { Game } from '@types'
+import { Game, User } from '@types'
 import * as React from 'react'
 import createStore from '@store'
 import { mount } from '@cypress/react'
 import { StoreContext } from 'storeon/react'
 import { MyGames } from '@components/MyGames'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
-import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
 import { decodedFakeAccessToken } from '@testUtils/fakeAccessToken'
+import { MemoryRouter, Route, RouteProps, useLocation } from 'react-router-dom'
 import {
   generateGamesList,
   generateGamesListForPassedInUser,
@@ -18,7 +18,7 @@ describe('MyGames', () => {
   let testLocation: Location | any = {}
   const initialRoute = '/my-game'
 
-  let games: Game[]
+  let games: Game<User>[]
 
   beforeEach(() => {
     store.dispatch('auth/setIdentity', fakeIdentity)
@@ -31,8 +31,8 @@ describe('MyGames', () => {
         </StoreContext.Provider>
         <Route
           path='*'
-          render={({ location }: RouteProps) => {
-            testLocation = location
+          Component={() => {
+            testLocation = useLocation()
             return <div data-cy='test'></div>
           }}
         />

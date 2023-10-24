@@ -25,19 +25,14 @@ export interface SelectUserContainerProps {
 
 export function SelectUserContainer({ selectOpponent }: SelectUserContainerProps) {
   const configs = useConfigs()
-  const { dispatch, Users } = useStoreon('Users')
-  const [userList, setUserList] = useState<Partial<User>[]>([])
+  const { dispatch, Users: userList } = useStoreon('Users')
   const [selectedUser, setSelectedUser] = useState<Partial<User> | undefined>(undefined)
 
   useEffect(() => {
-    if (configs.values) {
+    if (configs.values && !userList) {
       dispatch('users/getUsers', configs)
     }
-  }, [configs])
-
-  useEffect(() => {
-    setUserList(Users)
-  }, [Users])
+  }, [configs, userList])
 
   const updateUser = (user: Partial<User>) => setSelectedUser(user)
 

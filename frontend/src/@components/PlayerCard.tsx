@@ -4,10 +4,10 @@ import { stringToColor } from '@common'
 import { Box, Avatar } from '@mui/material'
 
 export interface PlayerCardProps {
-  me: boolean
+  me?: boolean
   name: string
   avatarUrl?: string
-  align: Align
+  align?: Align
 }
 
 const classes = {
@@ -28,7 +28,7 @@ const classes = {
   },
 }
 
-export function PlayerCard({ me, name, avatarUrl, align }: PlayerCardProps) {
+export function PlayerCard({ me = false, name, align }: PlayerCardProps) {
   align = align || 'left'
 
   return (

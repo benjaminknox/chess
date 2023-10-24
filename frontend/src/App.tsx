@@ -1,35 +1,42 @@
 import React from 'react'
-import { Grid } from '@mui/material'
-import { Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { useStoreon } from 'storeon/react'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '@auth/ProtectedRoute'
 import { LoginFormContainer } from '@pages/auth/LoginFormContainer'
 import { MyGames, Home, SelectOpponent, SelectSide, Game } from '@pages'
 
 export function App() {
-  const { dispatch, Auth } = useStoreon('Auth')
+  const { dispatch } = useStoreon('Auth')
 
   return (
-    <>
-      <ProtectedRoute exact path={'/'} component={Home} />
-      <ProtectedRoute
-        exact
-        path={'/new-game/select-opponent'}
-        component={SelectOpponent}
+    <Routes>
+      <Route path='/' element={<ProtectedRoute component={() => <Home />} />} />
+      <Route
+        path='/new-game/select-opponent'
+        element={<ProtectedRoute component={() => <SelectOpponent />} />}
       />
-      <ProtectedRoute exact path={'/my-games'} component={MyGames} />
-      <ProtectedRoute exact path={'/game/:id'} component={Game} />
-      <ProtectedRoute exact path={'/new-game/:uid/select-side'} component={SelectSide} />
-      <ProtectedRoute
-        exact
+      <Route
+        path='/my-games'
+        element={<ProtectedRoute component={() => <MyGames />} />}
+      />
+      <Route path={'/game/:id'} element={<ProtectedRoute component={() => <Game />} />} />
+      <Route
+        path={'/new-game/:uid/select-side'}
+        element={<ProtectedRoute component={() => <SelectSide />} />}
+      />
+      <Route
         path={'/logout'}
-        component={() => {
-          dispatch('auth/resetIdentity')
-          return <Redirect to='/login' />
-        }}
+        element={
+          <ProtectedRoute
+            component={() => {
+              dispatch('auth/resetIdentity')
+              return <Navigate to='/login' />
+            }}
+          />
+        }
       />
-      <Route exact path={'/login'} component={LoginFormContainer} />
-    </>
+      <Route path={'/login'} Component={LoginFormContainer} />
+    </Routes>
   )
 }

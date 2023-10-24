@@ -2,8 +2,9 @@ import { useConfigs } from '@common'
 import { Grid } from '@mui/material'
 import { LoginForm } from '@pages/auth'
 import React, { useState } from 'react'
+import { IdentityProps } from '@store/auth'
 import { useStoreon } from 'storeon/react'
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { b } from '@api/common/bodyParamsParser'
 
 export function LoginFormContainer() {
@@ -25,7 +26,7 @@ export function LoginFormContainer() {
           'Content-type': 'application/json',
         },
       })
-        .then(async (response: any) => {
+        .then(async (response: { json: () => Promise<IdentityProps>}) => {
           dispatch('auth/setIdentity', await response.json())
         })
         .finally(() => {
@@ -40,7 +41,7 @@ export function LoginFormContainer() {
   }
 
   return Auth.isAuthenticated ? (
-    <Redirect to={'/'} />
+    <Navigate to={'/'} />
   ) : (
     <Grid
       display='flex'

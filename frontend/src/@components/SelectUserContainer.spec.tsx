@@ -13,6 +13,7 @@ describe('SelectUserContiner', () => {
   let store: any
   let fetchMock: any
   const basePath = 'http://test'
+  const websocketBasePath = 'ws://test-url'
   let selectOpponent: Cypress.Agent<SinonStub>
   let testUserList: Partial<User>[]
 
@@ -85,7 +86,7 @@ describe('SelectUserContiner', () => {
 
   const TestSelectUserContainer = (config: Partial<ConfigsResponse>) => {
     const defaultConfig: ConfigsResponse = {
-      values: { apiBasePath: basePath },
+      values: { apiBasePath: basePath, websocketBasePath },
       loading: false,
       failed: false,
     }

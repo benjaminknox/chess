@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { /*useState, useEffect,*/ useContext } from 'react'
 
 interface Configs {
   apiBasePath: string
@@ -46,17 +46,11 @@ export function useConfigs(): ConfigsResponse {
 }
 
 function useConfigsResponse(): ConfigsResponse {
-  const [configs, setConfigs] = useState<Configs>()
-
-  useEffect(() => {
-    setConfigs({
+  return {
+    values: {
       apiBasePath: process.env.REACT_APP_API_BASE_PATH ?? '/api',
       websocketBasePath: process.env.REACT_APP_WEBSOCKET_BASE_PATH ?? `wss://${window.location.host}/ws`,
-    })
-  }, [])
-
-  return {
-    values: configs,
+    },
     loading: false,
     failed: false,
   }

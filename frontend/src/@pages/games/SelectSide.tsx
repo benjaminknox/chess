@@ -1,4 +1,5 @@
 import Color from 'color'
+import { Game } from '@types'
 import * as React from 'react'
 import { Space } from '@components'
 import { side } from '@common/types'
@@ -6,7 +7,7 @@ import { Grid, Fab } from '@mui/material'
 import { useStoreon } from 'storeon/react'
 import { b } from '@api/common/bodyParamsParser'
 import { colorScheme, useConfigs } from '@common'
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 const classes = {
   button: {
@@ -31,8 +32,8 @@ const classes = {
 
 export function SelectSide() {
   const configs = useConfigs()
-  const history = useHistory()
-  const { dispatch, Auth } = useStoreon('Auth')
+  const navigate = useNavigate()
+  const { Auth } = useStoreon('Auth')
   const { uid } = useParams() as { uid: string }
 
   const startGame = (selectedSide: string) => {
@@ -51,8 +52,8 @@ export function SelectSide() {
           'Content-type': 'application/json',
         },
       })
-        .then((response: any) => response.json())
-        .then((body: any) => history.push(`/game/${body.id}`))
+        .then((response: {json: () => Promise<Game>}) => response.json())
+        .then((body: Game) => navigate(`/game/${body.id}`))
     }
   }
 

@@ -11,7 +11,7 @@ export interface PlayerCardContainerProps {
 
 export function PlayerCardContainer({ userId, align }: PlayerCardContainerProps) {
   const configs = useConfigs()
-  const { dispatch, Auth } = useStoreon('Auth')
+  const { Auth } = useStoreon('Auth')
   const [name, setName] = useState<string>('')
   const [me, setMe] = useState<boolean>(false)
 

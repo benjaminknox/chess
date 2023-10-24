@@ -1,7 +1,7 @@
 import * as React from 'react'
 import createStore from '@store'
-import { mount } from '@cypress/react'
 import { Server } from 'mock-websocket'
+import { Method } from '@api/common/Method'
 import { StoreContext } from 'storeon/react'
 import { SinonStub } from 'cypress/types/sinon'
 import { BrowserRouter } from 'react-router-dom'
@@ -49,7 +49,7 @@ describe('Board', () => {
   const userFechMocks = [
     {
       path: `${basePath}/users/${whitePlayer.id}`,
-      method: 'GET',
+      method: 'GET' as Method,
       responseData: whitePlayer,
       headers: {
         'Content-type': 'application/json',
@@ -58,7 +58,7 @@ describe('Board', () => {
     },
     {
       path: `${basePath}/users/${blackPlayer.id}`,
-      method: 'GET',
+      method: 'GET' as Method,
       responseData: blackPlayer,
       headers: {
         'Content-type': 'application/json',

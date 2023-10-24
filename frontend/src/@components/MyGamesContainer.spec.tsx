@@ -1,6 +1,6 @@
-import { Game } from '@types'
 import * as React from 'react'
 import createStore from '@store'
+import { Game, User } from '@types'
 import { mount } from '@cypress/react'
 import { StoreContext } from 'storeon/react'
 import { SinonStub } from 'cypress/types/sinon'
@@ -16,8 +16,7 @@ describe('MyGamesContainer', () => {
   const store = createStore()
   const basePath = 'http://test'
   const websocketBasePath = 'ws://test-url'
-  let fetchStub: Cypress.Agent<SinonStub>
-  const game: Game = generateRandomGame({ white_player: decodedFakeAccessToken.sub })
+  const game: Game<User> = generateRandomGame({}, decodedFakeAccessToken.sub)
 
   beforeEach(() => {
     store.dispatch('auth/setIdentity', fakeIdentity)

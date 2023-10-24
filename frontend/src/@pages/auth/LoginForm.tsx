@@ -6,7 +6,7 @@ import { Alert, Grid, Paper, TextField, Typography } from '@mui/material'
 const classes = {
   loginWrapper: {
     padding: '10px',
-    maxWidth: '300px',
+    width: '300px',
   },
 }
 

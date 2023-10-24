@@ -1,6 +1,6 @@
-import { Game } from '@types'
 import * as React from 'react'
 import createStore from '@store'
+import { Game, User } from '@types'
 import { MyGames } from './MyGames'
 import { StoreContext } from 'storeon/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -15,7 +15,7 @@ describe('MyGames', () => {
     const store = createStore()
     const basePath = 'http://test'
     const websocketBasePath = 'ws://test-url'
-    const game: Game = generateRandomGame()
+    const game: Game<User> = generateRandomGame()
     store.dispatch('auth/setIdentity', fakeIdentity)
 
     mountWithFetchMocking(

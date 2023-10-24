@@ -1,10 +1,11 @@
-import Chess from 'chess.js'
+import { Chess } from 'chess.js'
 import { useConfigs } from '@common'
 import { useStoreon } from 'storeon/react'
+import { Game } from '@types'
 import { b } from '@api/common/bodyParamsParser'
 import React, { useState, useEffect } from 'react'
 import { PlayerCardContainer, Board } from '@components'
-import useWebSocket, { ReadyState } from 'react-use-websocket'
+import useWebSocket from 'react-use-websocket'
 
 export interface BoardContainerProps {
   gameId: string
@@ -12,8 +13,8 @@ export interface BoardContainerProps {
 
 export function BoardContainer({ gameId }: BoardContainerProps) {
   const configs = useConfigs()
-  const { dispatch, Auth } = useStoreon('Auth')
-  const [game, setGame] = useState<any>(undefined)
+  const { Auth } = useStoreon('Auth')
+  const [game, setGame] = useState<Game<string>>()
   const [board, setChess] = useState<typeof Chess>(new Chess())
 
   const [gameSocketUri, setGameSocketUri] = useState<string>('wss://echo.websocket.org')
@@ -33,7 +34,7 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
         },
       })
         .then(async response => response.json())
-        .then(async (body: any) => {
+        .then(async (body: Game<string>) => {
           setGame(body)
           if (body.moves.length > 0) {
             setChess(new Chess(body.moves[body.moves.length - 1].move))
@@ -46,11 +47,11 @@ export function BoardContainer({ gameId }: BoardContainerProps) {
   }, [configs.values, Auth.identity.access_token])
 
   const validMove = (piece: string) =>
-    game[piece[0] === 'b' ? 'black_player' : 'white_player'] ===
+    game && game[piece[0] === 'b' ? 'black_player' : 'white_player'] ===
     Auth.decodedAccessToken.sub
 
   const move = (sourceSquare: string, targetSquare: string, piece: string) => {
-    if (!validMove(piece)) return false
+    if (!game || !validMove(piece)) return false
 
     const move = board.move({ from: sourceSquare, to: targetSquare })
 

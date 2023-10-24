@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Pagination } from '@common'
 import { mount } from '@cypress/react'
-import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
+import { MemoryRouter, Route, RouteProps, useLocation } from 'react-router-dom'
 
 describe('Pagination', () => {
   let testLocation: Location | any = {}
@@ -13,8 +13,8 @@ describe('Pagination', () => {
         <Pagination />
         <Route
           path='*'
-          render={({ location }: RouteProps) => {
-            testLocation = location
+          Component={() => {
+            testLocation = useLocation()
             return <div data-cy='test'></div>
           }}
         />

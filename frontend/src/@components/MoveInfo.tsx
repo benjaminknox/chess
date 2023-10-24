@@ -1,4 +1,3 @@
-import Color from 'color'
 import Chess from 'chess.js'
 import * as React from 'react'
 import { Fab } from '@mui/material'

@@ -1,11 +1,10 @@
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import AppsIcon from '@mui/icons-material/Apps'
 import React, { ReactNode, useState } from 'react'
 import ForwardIcon from '@mui/icons-material/Forward'
 import ViewListIcon from '@mui/icons-material/ViewList';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {
-  Link,
   List,
   Grid,
   Drawer,
@@ -53,7 +52,7 @@ const classes = {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
@@ -68,7 +67,7 @@ export function Layout({ children }: LayoutProps) {
           <ListItem
             button
             data-cy='my-games-button'
-            onClick={() => history.push('/my-games')}
+            onClick={() => navigate('/my-games')}
           >
             <ListItemIcon>
               <ViewListIcon />
@@ -78,7 +77,7 @@ export function Layout({ children }: LayoutProps) {
           <ListItem
             button
             data-cy='logout-button'
-            onClick={() => history.push('/logout')}
+            onClick={() => navigate('/logout')}
           >
             <ListItemIcon>
               <ForwardIcon />

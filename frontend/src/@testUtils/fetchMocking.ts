@@ -1,5 +1,7 @@
 import { Method } from '@api/common/Method'
 
+type RequestInfoType = RequestInfo | import("undici-types/fetch").RequestInfo
+
 export interface FetchMock {
   path: string
   method: Method
@@ -20,7 +22,7 @@ export function fetchMocking(...mocks: FetchMock[]): jest.MockedFunction<any> {
 }
 
 export const mockFake = async (
-  path: RequestInfo,
+  path: RequestInfoType,
   params: RequestInit | undefined,
   mockedArgs: MockLookup,
   mocks: FetchMock[]
@@ -50,12 +52,13 @@ export const mockFake = async (
   }
 }
 
-function setupFetchMocks(mocks: FetchMock[], useJest = false): jest.MockedFunction<any> {
+
+function setupFetchMocks(mocks: FetchMock[]): jest.MockedFunction<any> {
   const mockedArgs = mockLookupArgBuilder(mocks)
   jest
     .spyOn(window, 'fetch')
-    .mockImplementation((path: RequestInfo, params?: RequestInit | undefined) =>
-      mockFake(path, params, mockedArgs, mocks)
+    .mockImplementation((input: RequestInfoType, init?: RequestInit | undefined) =>
+      mockFake(input, init, mockedArgs, mocks)
     )
 }
 

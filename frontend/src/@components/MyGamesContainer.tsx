@@ -1,13 +1,13 @@
 import { MyGames } from './MyGames'
+import { Game, User } from '@types'
 import { useConfigs } from '@common'
 import { useStoreon } from 'storeon/react'
-import { Game } from '@types'
 import React, { useEffect, useState } from 'react'
 
 export function MyGamesContainer() {
   const configs = useConfigs()
-  const { dispatch, Auth } = useStoreon('Auth')
-  const [games, setGames] = useState<Game[]>([])
+  const { Auth } = useStoreon('Auth')
+  const [games, setGames] = useState<Game<User>[]>([])
 
   useEffect(() => {
     if (configs.values) {

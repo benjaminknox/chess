@@ -33,12 +33,12 @@ export const Users: StoreonModule<State, UsersEvents> = store => {
         'Content-type': 'application/json',
         Authorization: `Bearer ${state.Auth.identity?.access_token}`,
       },
-    }).then(async (response: any) => {
+    }).then(async (response: {json: () => Promise<User[]>}) => {
       store.dispatch('users/setUsers', await response.json())
     })
   })
 
-  store.on('users/resetUsers', state => {
+  store.on('users/resetUsers', () => {
     store.dispatch('users/setUsers', [])
   })
 }

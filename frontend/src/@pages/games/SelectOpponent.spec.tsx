@@ -5,7 +5,7 @@ import { mount } from '@cypress/react'
 import { StoreContext } from 'storeon/react'
 import { SelectOpponent } from './SelectOpponent'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
-import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
 import { mountWithFetchMocking, generateUsersList } from '@testUtils'
 
@@ -14,6 +14,7 @@ describe('SelectOpponent', () => {
   let fetchMock: any
   const basePath = 'http://test'
   let testLocation: Location | any = {}
+  const websocketBasePath = 'ws://test-url'
 
   const testUserList: Partial<User>[] = generateUsersList()
   const opponent = testUserList[2].id
@@ -57,7 +58,7 @@ describe('SelectOpponent', () => {
 
   const TestSelectOpponent = (config: Partial<ConfigsResponse>) => {
     const defaultConfig: ConfigsResponse = {
-      values: { apiBasePath: basePath },
+      values: { apiBasePath: basePath,  websocketBasePath },
       loading: false,
       failed: false,
     }
@@ -75,8 +76,8 @@ describe('SelectOpponent', () => {
           </ConfigsProviderForTesting>
           <Route
             path='*'
-            render={({ location }: RouteProps) => {
-              testLocation = location
+            Component={() => {
+              testLocation = useLocation()
               return <div data-cy='test'></div>
             }}
           />

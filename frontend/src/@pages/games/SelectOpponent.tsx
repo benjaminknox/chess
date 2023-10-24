@@ -1,14 +1,14 @@
 import * as React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { SelectUserContainer } from '@components'
 
 export function SelectOpponent() {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   return (
     <SelectUserContainer
       selectOpponent={user => {
-        history.push(`/new-game/${user.id}/select-side`)
+        navigate(`/new-game/${user.id}/select-side`)
       }}
     />
   )

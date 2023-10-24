@@ -4,13 +4,6 @@ import { Game } from '@types'
 import mongoid from 'mongoid-js'
 import { v4 as uuidv4 } from 'uuid'
 
-//function makeRandomMove (game: typeof Chess) {
-//  const moves = game.moves()
-//  const move = moves[Math.floor(Math.random() * moves.length)]
-//  game.move(move)
-//  return move
-//}
-
 export const generateRandomGame = (
   PassedInGame: Partial<Game> = {},
   whitePlayerId?: string,
@@ -46,10 +39,10 @@ export const generateRandomGame = (
 }
 
 export const generateGamesList = (PassedInGame: Partial<Game> = {}): Game[] =>
-  Array.from({ length: 15 }, (_, i) => generateRandomGame(PassedInGame))
+  Array.from({ length: 15 }, () => generateRandomGame(PassedInGame))
 
 export const generateGamesListForPassedInUser = (id: string): Game[] =>
-  Array.from({ length: 15 }, (_, i) => {
+  Array.from({ length: 15 }, () => {
     const determiner = Math.random() < 0.5
 
     const white_player = determiner ? id : undefined

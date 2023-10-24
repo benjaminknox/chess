@@ -1,11 +1,10 @@
 import Color from 'color'
-import Chess from 'chess.js'
-import { Game } from '@types'
+import React  from 'react'
+import { Chess } from 'chess.js'
+import { Game, User } from '@types'
 import { colorScheme } from '@common'
-import { useConfigs } from '@common'
 import { useStoreon } from 'storeon/react'
-import { useHistory } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Typography,
   Paper,
@@ -17,7 +16,7 @@ import {
 } from '@mui/material'
 
 interface MyGamesProps {
-  games: Game[]
+  games: Game<User>[]
 }
 
 const indicator = {
@@ -50,9 +49,9 @@ const blackIndicator = {
   },
 }
 
-const GameRow = ({ game }: { game: Game }) => {
-  const history = useHistory()
-  const { dispatch, Auth } = useStoreon('Auth')
+const GameRow = ({ game }: { game: Game<User> }) => {
+  const navigate = useNavigate()
+  const { Auth } = useStoreon('Auth')
 
   const opponent =
     game.white_player.id === Auth.decodedAccessToken.sub
@@ -85,7 +84,7 @@ const GameRow = ({ game }: { game: Game }) => {
       }}
       data-cy={`game`}
       data-cy-id={`game-${game.id}`}
-      onClick={() => history.push(`/game/${game.id}`)}
+      onClick={() => navigate(`/game/${game.id}`)}
     >
       <TableCell className={'cell'}>
         <Fab

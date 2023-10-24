@@ -14,6 +14,7 @@ describe('LoginFormContainer', () => {
   const testUser = 'testUser'
   const basePath = 'http://test'
   const testPassword = 'testPassword'
+  const websocketBasePath = 'ws://test-url'
   const loginPath = `${basePath}/api/jwt/login`
   const auth: string = btoa(`${testUser}:${testPassword}`)
 
@@ -123,7 +124,7 @@ describe('LoginFormContainer', () => {
 
   const TestLoginFormContainer = (config: Partial<ConfigsResponse>) => {
     const defaultConfig: ConfigsResponse = {
-      values: { apiBasePath: basePath },
+      values: { apiBasePath: basePath, websocketBasePath },
       loading: false,
       failed: false,
     }

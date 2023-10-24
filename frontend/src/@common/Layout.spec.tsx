@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Layout } from './Layout'
 import { mount } from '@cypress/react'
-import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 
 describe('Layout', () => {
   let testLocation: Location | any = {}
@@ -13,8 +13,8 @@ describe('Layout', () => {
         </Layout>
         <Route
           path='*'
-          render={({ location }: RouteProps) => {
-            testLocation = location
+          Component={() => {
+            testLocation = useLocation()
             return <div data-cy='test'></div>
           }}
         />

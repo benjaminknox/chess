@@ -8,7 +8,7 @@ import { b } from '@api/common/bodyParamsParser'
 import { mountWithFetchMocking } from '@testUtils'
 import { ProtectedRoute } from '@auth/ProtectedRoute'
 import { fakeIdentity } from '@testUtils/fakeIdentity'
-import { MemoryRouter, Route, RouteProps } from 'react-router-dom'
+import { MemoryRouter, Route, useLocation } from 'react-router-dom'
 import { decodedFakeAccessToken } from '@testUtils/fakeAccessToken'
 import { ConfigsResponse, ConfigsProviderForTesting } from '@common'
 
@@ -18,6 +18,7 @@ describe('SelectSide', () => {
   const opponent = 'test-user-uuid'
   let testLocation: Location | any = {}
   let fetchMock: Cypress.Agent<SinonStub>
+  const websocketBasePath = 'ws://test-url'
   const testGameId = '26de07da-37eb-4ca5-a9b4-2c90bbc7fd1b'
 
   beforeEach(() => {
@@ -118,7 +119,7 @@ describe('SelectSide', () => {
 
   const TestSelectSide = (config: Partial<ConfigsResponse>) => {
     const defaultConfig: ConfigsResponse = {
-      values: { apiBasePath: basePath },
+      values: { apiBasePath: basePath, websocketBasePath },
       loading: false,
       failed: false,
     }
@@ -129,24 +130,22 @@ describe('SelectSide', () => {
     }
 
     return (
-      <MemoryRouter initialEntries={[`/new-game/${opponent}/select-side`]}>
-        <StoreContext.Provider value={store}>
-          <ConfigsProviderForTesting config={configsForUse}>
-            <ProtectedRoute
-              exact
-              path={'/new-game/:uid/select-side'}
-              component={SelectSide}
+      <StoreContext.Provider value={store}>
+        <ConfigsProviderForTesting config={configsForUse}>
+          <MemoryRouter initialEntries={[`/new-game/${opponent}/select-side`]}>
+            <Route path={'/new-game/:uid/select-side'}>
+              <ProtectedRoute component={() => <SelectSide />} />
+            </Route>
+            <Route
+              path='*'
+              Component={() => {
+                testLocation = useLocation()
+                return <div data-cy='test'></div>
+              }}
             />
-          </ConfigsProviderForTesting>
-          <Route
-            path='*'
-            render={({ location }: RouteProps) => {
-              testLocation = location
-              return <div data-cy='test'></div>
-            }}
-          />
-        </StoreContext.Provider>
-      </MemoryRouter>
+          </MemoryRouter>
+        </ConfigsProviderForTesting>
+      </StoreContext.Provider>
     )
   }
 })
